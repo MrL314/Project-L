@@ -3,18 +3,7 @@ import argparse
 
 
 
-
-
-
-
-
-
-
 FILE = ""
-
-
-
-
 
 
 
@@ -75,7 +64,7 @@ if __name__ == "__main__":
 
 	GLOBALVARS = ["", ]
 
-
+	# rough opcode names and size of instructions (roughly will approximate output code)
 	opcodes = {
 		'00':{'name':'BRK', 'size':2},
 		'01':{'name':'ORA', 'size':2},
@@ -338,7 +327,7 @@ if __name__ == "__main__":
 
 	def get_section_name(section):
 
-		#return list_to_string(section[-1:]).replace(" ", "")
+		
 		rev = [x for x in reversed(list(section[-2:]))]
 		s_num = 0
 		for i in range(len(rev)):
@@ -397,7 +386,7 @@ if __name__ == "__main__":
 
 	def rel_name_decode(dat):
 		global GLOBALVARS
-		#print(" ".join([format(x, "02x") for x in dat]))
+		
 		ind = 0
 
 		while ind < len(dat):
@@ -414,9 +403,7 @@ if __name__ == "__main__":
 			TYPE = dat[ind]
 			ind += 1
 
-			#print(str(LEN), NAME, str(TYPE))
-			#print(str(LEN), NAME)
-			#print(NAME)
+			
 
 
 			if TYPE == 0:
@@ -778,7 +765,7 @@ if __name__ == "__main__":
 		DATA = DATA[name_len:]
 		print(list_to_text(name))
 		sec_size = list_to_int(DATA[:8])
-		#print(list_to_string(DATA[:8]))
+		
 		DATA = DATA[8:]
 
 
