@@ -70,7 +70,6 @@ if __name__ == "__main__":
 
 		return v
 
-	#dat = H_DATA[0xd1:]
 
 	SECTIONS = [""]
 
@@ -366,8 +365,6 @@ if __name__ == "__main__":
 
 	def processor_status_data_decode(dat):
 
-		# for now this is just to print the data out
-		#print(list_to_string(dat))
 
 		while not (dat[0] == 0 and dat[1] == 0):
 
@@ -384,10 +381,10 @@ if __name__ == "__main__":
 
 
 			print(flag,  " @  ", get_section_name(section), ", offset", list_to_string(offset).replace(" ", ""))
-			#print(list_to_string(dat[:11]))
+
 			dat = dat[11:]
 
-		#print(list_to_string(dat[:2]).replace(" ", ""))
+
 		print("; end processor data 00 00") #last 2 bytes 00
 
 
@@ -434,14 +431,12 @@ if __name__ == "__main__":
 				offset = dat[ind:ind+4]
 				ind += 4
 
-				#print("GLB value:\n   data1: " + list_to_string(data1) + "\n   offset: " + list_to_string(offset).replace(" ","")) 
 				print("label ", NAME.ljust(25), "; " + get_section_name(section) + "::" + list_to_string(offset[1:]).replace(" ","").upper())
 
 
 			elif TYPE == 2:
 				#exact value
 
-				#print("Exact Value: " + list_to_string(dat[ind:ind+8]).replace(" ", ""))
 				print(NAME.ljust(20), "  EQU  ", list_to_string(dat[ind:ind+8]).replace(" ", "")[-6:])
 				ind += 8
 
@@ -453,7 +448,6 @@ if __name__ == "__main__":
 			elif TYPE == 4:
 				#external
 
-				#print("External Value   " + list_to_string(dat[ind:ind+8]).replace(" ", ""))
 				print("EXT   ", NAME.ljust(20), end="")
 
 				GLOBALVARS.append(NAME)
@@ -473,14 +467,12 @@ if __name__ == "__main__":
 				ind += 4
 
 
-				#print("GLB value:\n   data1: " + list_to_string(data1) + "\n   offset: " + list_to_string(offset).replace(" ","")) 
 				print("GLB   ", NAME.ljust(20), "     ; ", get_section_name(section) + "::" + list_to_string(offset).replace(" ",""))
 				GLOBALVARS.append(NAME)
 
 			elif TYPE == 6:
 				#global exact
 
-				#print("External Value   " + list_to_string(dat[ind:ind+8]).replace(" ", ""))
 				print("GLB   ", NAME, ";  value ", list_to_string(dat[ind:ind+8]).replace(" ", "")[-6:])
 				GLOBALVARS.append(NAME)
 				ind += 8
@@ -492,7 +484,6 @@ if __name__ == "__main__":
 				break
 
 
-			#print("")
 
 		if dat[ind] == 0:
 			print("; end data, 00")
@@ -523,7 +514,7 @@ if __name__ == "__main__":
 
 	def section_data_decode(dat):
 		global SECTIONS
-		#print(" ".join([format(x, "02x") for x in dat]))
+		
 		while dat != [] and dat[0] != 0:
 			name_len = dat[0]
 			name = list_to_text(dat[1:name_len+1])
@@ -541,8 +532,8 @@ if __name__ == "__main__":
 				offset = dat[33:35]
 
 				dat = dat[35:]
-
-				#print("sect", name.ljust(15), list_to_string(data1), "  {weird 18 thing}  ; ", "offset ", list_to_string(offset).replace(" ", ""))
+				
+				
 				print("sect", name.ljust(15), list_to_string(data1), " ; ", "size =", list_to_string(offset).replace(" ", ""))
 
 			elif TYPE == 2:
@@ -563,7 +554,7 @@ if __name__ == "__main__":
 
 				dat = dat[35:]
 
-				#print("comn", name.ljust(15), list_to_string(data1), "  {weird 18 thing}  ; ", "offset ", list_to_string(offset).replace(" ", ""))
+				
 
 				print("comn", name.ljust(15), list_to_string(data1), " ; ", "offset ", list_to_string(offset).replace(" ", ""))
 
@@ -575,7 +566,7 @@ if __name__ == "__main__":
 		if dat[0] == 0:
 			print("; end of section data, 00")
 
-		#print(SECTIONS)
+		
 
 
 
@@ -719,7 +710,7 @@ if __name__ == "__main__":
 						#low byte of variable
 						print(".LOW", end="")
 
-					#print("(BITS ARE " + format(section[0], "02x") + ")", end="")
+					
 
 
 				if variable_type == 0x11:
@@ -773,7 +764,7 @@ if __name__ == "__main__":
 
 		# extra time byte???
 		data_byte = DATA[:1]
-		# print("extra time byte?: " + list_to_string(data_byte))
+		
 		DATA = DATA[1:]
 
 
@@ -809,32 +800,7 @@ if __name__ == "__main__":
 			DATA = DATA[1:]
 
 
-		'''
-		# PROG block
-		prog_name_len = DATA[0]
-		DATA = DATA[1:]
-
-		prog_name = DATA[:prog_name_len]
-		DATA = DATA[prog_name_len:]
-		print(list_to_text(prog_name))
-		print(list_to_string(DATA[:8]))
-		DATA = DATA[8:]
-		print("; end PROG block data,", list_to_string(DATA[:1]))
-		DATA = DATA[1:]
-
-
-		# DATA block
-		data_name_len = DATA[0]
-		DATA = DATA[1:]
-
-		data_name = DATA[:data_name_len]
-		DATA = DATA[data_name_len:]
-		print(list_to_text(data_name))
-		print(list_to_string(DATA[:8]))
-		DATA = DATA[8:]
-		print("; end DATA block data,", list_to_string(DATA[:1]))
-		DATA = DATA[1:]
-		'''
+		
 
 
 		# end header ??
@@ -867,10 +833,10 @@ if __name__ == "__main__":
 		DATA = decode_header(DATA)
 
 
-		#DATA = DATA[0x3e:]
+		
 
 
-		input("")
+		input("") # slow down print for ease of viewing
 
 
 
@@ -883,7 +849,7 @@ if __name__ == "__main__":
 
 		section_data_decode(dat)
 
-		input("")
+		input("") # slow down print for ease of viewing
 
 
 
@@ -896,7 +862,7 @@ if __name__ == "__main__":
 
 		rel_name_decode(dat)
 
-		input("")
+		input("") # slow down print for ease of viewing
 
 		#section 3
 		print("\n---------PROCESSOR STATUS DATA-----------\n")
@@ -906,13 +872,13 @@ if __name__ == "__main__":
 
 		processor_status_data_decode(dat)
 		
-		input("")
+		input("") # slow down print for ease of viewing
 
 
 
 
 		#section 4 ASM file name
-		print("\n---------file name???-----------\n")
+		print("\n---------file name-----------\n")
 		LEN = DATA[0]
 		ASCII_NAME = list_to_text(DATA[1:1+LEN])
 		DATA = DATA[LEN+1:]
@@ -920,7 +886,7 @@ if __name__ == "__main__":
 		print(ASCII_NAME)
 
 
-		input("")
+		input("") # slow down print for ease of viewing
 
 		#section 5
 		print("\n---------LOCAL VAR DATA-----------\n")
@@ -930,7 +896,7 @@ if __name__ == "__main__":
 
 		rel_name_decode(dat)
 
-		input("")
+		input("") # slow down print for ease of viewing
 
 
 
@@ -950,15 +916,4 @@ if __name__ == "__main__":
 
 
 
-
-
-
-
-
-
-
-
-
-	#print_rel_data(H_DATA[0xd0:])
-	#print_rel_data(H_DATA[0x3e:])
 	print_rel_data(H_DATA)
