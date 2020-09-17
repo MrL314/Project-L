@@ -68,6 +68,8 @@ if __name__ == "__main__":
 
 	parser.add_argument("outputfile", metavar="outputfile", type=str, help="Name of output ROM file to create.", default="")
 
+	parser.add_argument("--rom_size", dest="rom_size", default=512, type=int, help="Set output rom size (in KB)")
+
 
 
 	ARGS = vars(parser.parse_args())
@@ -83,7 +85,9 @@ if __name__ == "__main__":
 	if ARGS["outputfile"] != "":
 		outputfile = ARGS["outputfile"]
 
+	ROM_SIZE = ARGS["rom_size"]
 
+	
 
 
 
@@ -322,7 +326,7 @@ if __name__ == "__main__":
 
 
 
-
+	"""
 	ROM_DATA = []
 
 	ROM_TYPE = "LoROM"
@@ -340,6 +344,7 @@ if __name__ == "__main__":
 
 	elif ROM_TYPE == "HiROM":
 		pass
+	"""
 
 
 
@@ -347,4 +352,4 @@ if __name__ == "__main__":
 
 
 	with open(outputfile, "wb") as outf:
-		outf.write(bytes(HEX_DATA[:0x80000]))
+		outf.write(bytes(HEX_DATA[:ROM_SIZE * 0x400]))

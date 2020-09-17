@@ -774,7 +774,13 @@ class REL_FILE(object):
 		if dat[0] == 0:
 			#print("\n; end of code segment, 00 00")
 			if curr_section != None:
-				self._sections[sec_ind]["code_data"] = curr_code
+				SECTION_INDEX = self.get_section(self._sections[sec_ind]["sec_name"])["sec_ind"]
+
+				if not "code_data" in self._sections[SECTION_INDEX]:
+					self._sections[SECTION_INDEX]["code_data"] = []
+
+				for c in curr_code:
+					self._sections[SECTION_INDEX]["code_data"].append(c)
 
 		else:
 			raise IndexError("did not reach end of code")
