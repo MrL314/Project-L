@@ -66,17 +66,6 @@ If you want to force all files to be re-assembled, simply delete "fhist.ahist".
 
 
 
-##############################
-# REL debugging              #
-##############################
-
-
-To debug rel files, use the "rel reader.py" program. Simply run
-	rel_reader.exe <file>
-
-
-
-
 I will be writing a more in-depth instruction manual soon, but I would like to 
 get a beta version of this out before it becomes too much hassle. So stay up
 to date with the newest releases on the discord server:
@@ -105,6 +94,24 @@ individuals.
  
 Patreon:
 	https://www.patreon.com/MrL314 
+
+
+
+
+
+
+##############################
+# REL debugging              #
+##############################
+
+
+To debug rel files, use the "rel reader.py" program. Simply run
+	rel_reader.exe <file>
+
+
+
+
+
 
 
 
