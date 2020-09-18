@@ -1,1 +1,0 @@
-prog=0ff70,bank80=808000,objprog=80b900,objdata=818000,objinit=85dc00,bank81=81e000,bank83=83f000,bank84=84d500,bank85=858000,SFXDOS=09c000,editer=088000,comn=0
