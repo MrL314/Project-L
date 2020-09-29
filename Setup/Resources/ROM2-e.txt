@@ -1,0 +1,143 @@
+#----------------------------------------------------------------------------
+#		ROM 2 address	(bank 84h,85h,86h,87h)
+#----------------------------------------------------------------------------
+#
+#
+#----------------------------------------------------------------------------
+#		BANK 84h 		848000h---4a000h //Is this right?  Seems to start a 4a000
+#----------------------------------------------------------------------------
+#
+#Luigi driver sprite
+../obj/kart/luigi.CGX			$00000	$02800	$02000
+#
+# Top row of Nintendo Logo
+../obj/others/nintendo.CGX		$00000  #00100	$04500
+#
+# Bottom row of Nintendo Logo
+../obj/others/nintendo.CGX		$00200  #00100	$04700
+#
+# Koopa Beach music
+../sound/sand.cpr               $00000  $0043a	$04800
+#
+# Bowser Castle music
+../sound/castle.cpr            $00000  $00375	$04c3a
+# Choco Island music
+../sound/dart.cpr	             $00000  $00527	$04faf
+#						end 54d6
+#							END      5500--->>>
+#----------------------------------------------------------------------------
+#		5600h----PROGRAM AREA
+#----------------------------------------------------------------------------
+#
+# 00000h-1fffh	(88000h-89fffh)			
+#----------------------------------------------------------------------------
+#
+# Loser disappearance cloud sprite
+../obj/others/lost.cpr          	$00000  $001c9	$00000
+#
+# Mario Circuit road gfx (4bpp rev)
+../mode7/chr/circuit.cpr     		$00000	$00da1	$001c9
+#
+# Bowser Castle road gfx (4bpp rev)
+../mode7/chr/castle.cpr      		$00000	$0089a	$00f6a
+#
+# Title music					
+../sound/title.cpr		$0000	$00418	$01801
+#
+# Dust cloud sprite
+../obj/others/sand.cpr          	$00000  $00277	$01c19
+#						(259) Size of Dust cloud sprite so the rest is Empty Space
+#
+# Demo recorded input Toad
+../bin/demo_kinopio.bin		$00000	$0000d0	$01e90
+#
+# Demo recorded input Princess
+../bin/demo_peach.bin		$00000	$0000a0	$01f60
+#
+#					END 1fffh rest 000h
+#----------------------------------------------------------------------------
+#		BANK 085h			
+#----------------------------------------------------------------------------
+#
+#		PROGRAM AREA
+#
+#----------------------------------------------------------------------------
+#		bank 086h	(from 868000h-h   end 7f30 rest 0d0h)
+#----------------------------------------------------------------------------
+#
+# Mario Circuit 3 track data
+../mode7/scr/circuit/circuit01.sss	$00000	$000d2c	$010000
+#
+# Mario Circuit 1 track data
+../mode7/scr/circuit/circuit02.sss	$00000	$0007ff	$010d2c
+#
+# Mario Circuit 4 track data
+../mode7/scr/circuit/circuit03.sss	$00000	$000d1a	$01152b
+#						
+# Ghost Valley 3 track data
+../mode7/scr/obake/obake02.sss		$00000	$0005de	$012245
+#
+# Donut Plains 2 track data
+../mode7/scr/grass/grass01.sss		$00000	$001745	$012823
+#
+# Vanilla Lake 2 track data
+../mode7/scr/ice/ice01.sss			$00000	$00105c	$013f68
+#					
+# Choco Island 2 track data
+../mode7/scr/dart/dart02.sss        $00000	$0011ea	$014fc4
+#						
+# Koopa Beach 1 track data
+../mode7/scr/sand/sand02.sss		$00000	$00118a	$0161ae
+#					
+# Battle Course 1 track data
+../mode7/scr/battle/battle06.sss	$00000	$000287	$017338
+#
+# Ghost Valley 1 track data
+../mode7/scr/obake/obake03.sss      $00000	$0004b4	$0175bf
+#
+# Rainbow Road music
+../sound/star.cpr					$00000	$000551	$017a73
+#					END 17fb5             REST 4Bh - Unused space
+#----------------------------------------------------------------------------
+#		bank 087h	(from 878000h-h   )
+#----------------------------------------------------------------------------
+# Choco Island road gfx (4bpp rev)
+../mode7/chr/dart.cpr               $00000  $000a6b	$018000
+#
+# Donut Plains 3 track data
+../mode7/scr/grass/grass02.sss		$00000	$001716	$018a6b
+#						
+# Donut Plains 1 track data
+../mode7/scr/grass/grass03.sss    	$00000	$0016a4	$01a181
+#
+# Bowser Castle 1 track data
+../mode7/scr/castle/castle03.sss    $00000	$000d02	$01b825
+#
+# Bowser Castle 2 track data
+../mode7/scr/castle/castle01.sss	$00000	$0010d8	$01c527
+#
+# Bowser Castle 3 track data
+../mode7/scr/castle/castle02.sss	$00000  $001222	$01d5ff
+#
+# Ghost Valley 2 track data
+../mode7/scr/obake/obake01.sss		$00000	$00051a	$01e821
+#
+# Battle Course 4 track data
+../mode7/scr/battle/battle03.sss    $00000  $000452 $01ed3b
+#					
+# Credits music
+../sound/ending.cpr		$00000	$000a54	$01f18d
+#						
+# Podium no cup music (when below 3rd place)
+../sound/final02.cpr    $0000   $001d9  $01fbe1
+#					
+# Tile types and behaviors for each theme
+../bin/bg-data.cpr     	$00000  $0018b  $01fdba
+#					REST 2c8h - Free space $01FC7D to$01ff45 empty
+#
+# Demo 1 recorded inputs for Mario
+../bin/demo_mario.bin		$00000	$0000a0	$01ff45
+#					end 1ffe5		rest 1bh
+#----------------------------------------------------------------------------
+#		END
+#----------------------------------------------------------------------------

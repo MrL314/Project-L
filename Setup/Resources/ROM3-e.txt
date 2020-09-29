@@ -1,0 +1,148 @@
+#----------------------------------------------------------------------------
+#		ROM 3 address	(bank C0h,C1h,02C,C3h)
+#----------------------------------------------------------------------------
+#
+#	Mario driver sprite
+../obj/kart/mario.CGX		$00000	$06000	$02000
+#	Bowser driver sprite
+../obj/kart/koopa.CGX		$00000	$06000	$0a000
+#	Princess driver sprite
+../obj/kart/peach.CGX		$00000	$06000	$12000
+#	DK Jr. driver sprite
+../obj/kart/cong.CGX		$00000	$06000	$1a000
+#----------------------------------------------------------------------------
+#		BANK C0h 		C00000h---C02000h
+#----------------------------------------------------------------------------
+#
+#	Ghost Pillar sprite
+../obj/others/pole.cpr		$00000	$00334	$00000
+#
+#	Ghost Valley music
+../sound/obake.cpr      	$00000  $002a2	$00334
+#
+#	Monty Mole sprite
+../obj/others/mogura.cpr	$00000	$0032d	$005d6
+#
+#	Water/mud, grass effect and impact sprites
+../obj/others/water.cpr		$00000	$002b4	$00903
+#
+#	Winner Flag sprite
+../obj/others/checker.cpr	$00000	$002df	$00bb7
+#
+#	Battle Mode Balloon sprite
+../obj/others/ball.cpr		$00000	$001da	$00e96
+#
+#	Thwomp sprite
+../obj/others/dossun.cpr	$00000	$00429	$01070
+#
+#	 Rainbow Road background gfx (2bpp)
+../back/chr/star.cpr		$00000	$00055	$01499
+#
+#	Vanilla Lake road gfx (4bpp rev)
+../mode7/chr/ice.cpr		$00000  $00a5e	$014ee
+#
+#	Demo recorded inputs (1 - Yoshi)
+../bin/demo_yossy.bin	$00000	$000b0	$01f4c		
+#
+#				1ffch   		;REST 04H
+#----------------------------------------------------------------------------
+#		BANK C1h		C10000h---C12000h
+#----------------------------------------------------------------------------
+#
+#	Lakitu, shadow, coin and sparks sprites
+../obj/others/j-s-c.bin 	$00000	$00aa5	$08000
+#
+#	Piranha Plant sprite
+../obj/others/pakkun.cpr    $00000	$004f6	$08aa5
+#
+#	Pipe sprite
+../obj/others/dokan.cpr 	$00000	$0035d	$08f9b
+#
+#	Race time font + Item icon sprites (2bpp)
+../back/chr/abc.cpr	       	$00000	$0040e	$092f8
+#
+#	Cheep-Cheep sprite
+../obj/others/pukupuku.cpr	$00000	$00508	$09706
+#
+#					(04e7) compressed size $20 free space
+#	Squashed driver sprites
+../obj/others/perapera.cpr  $00000  $00363  $09c0e
+#
+#						(end 9f71)-08fh rest Empty Space
+#----------------------------------------------------------------------------
+#		BANK C2h		C20000h---C22000h
+#----------------------------------------------------------------------------
+#
+#	Mario Circuit Track background graphics (2bpp)
+../back/chr/circuit.cpr		$00000	$00148	$10000
+#
+#	Ghost Valley Track background graphics (2bpp)
+../back/chr/obake.cpr		$00000	$0020e	$10148
+#
+#	Donut Plains Track background graphics (2bpp)
+../back/chr/grass.cpr		$00000	$001cd	$10356
+#
+#	Bowser Castle Track background graphics (2bpp)
+../back/chr/castle.cpr		$00000	$000c8	$10523
+#
+#	Vanilla Lake Track background graphics (2bpp)
+../back/chr/ice.cpr			$00000	$000ca	$105eb
+#
+#	Choco Island Track background graphics (2bpp)
+../back/chr/dart.cpr		$00000	$001ed	$106b5
+#
+#	Koopa Beach Track background graphics (2bpp)
+../back/chr/sand.cpr		$00000	$000a9	$108a2
+#
+#	Mario Circuit Track background layout (2bpp)
+../back/scr/circuit.cpr		$00000	$001e9	$10946
+#
+#	Ghost Valley Track background layout (2bpp)
+../back/scr/obake.cpr		$00000	$001bf	$10b34
+#
+#	Donut Plains Track background layout (2bpp)
+../back/scr/grass.cpr		$00000	$00192	$10cf3
+#
+#	Bowser Castle Track background layout (2bpp)
+../back/scr/castle.cpr		$00000	$002a1	$10e85
+#
+#	Vanilla Lake Track background layout (2bpp)
+../back/scr/ice.cpr			$00000	$00126	$11126
+#
+#	Choco Island Track background layout (2bpp)
+../back/scr/dart.cpr		$00000	$0015c	$1124c
+#
+#	Koopa Beach Track background layout (2bpp)
+../back/scr/sand.cpr	$00000	$00146	$113a8
+#----------------------------------------------------------------------------
+#
+#	Battle Course 3 track layout
+../mode7/scr/battle/battle02.sss        $00000  $000277 $114ee
+#
+#	Battle Course 2 track layout
+../mode7/scr/battle/battle05.sss        $00000  $00031e $11765
+#
+# Podium ceremony music
+../sound/final01.cpr					$00000  $000210	$11a83
+#	
+#	Demo recorded input Donkey Kong J.r.
+../bin/demo_kong.bin	$00000	$000090	$11c93
+#
+#	Demo recorded input Koopa Troopa
+../bin/demo_kame.bin	$00000  $0000f0	$11d23
+#						(end 11e01H)    03Fh REST Empty Space
+#----------------------------------------------------------------------------
+#		BANK C3h		C30000h---C32000h
+#----------------------------------------------------------------------------
+#
+#	Driver face and little position number sprites
+../obj/others/mark.cpr		$00000	$00b9d	$18000
+#
+#	Donut Plains music
+../sound/grass.cpr			$00000  $0049f	$18b9d				
+#	Vanilla Lake 1 track layout
+../mode7/scr/ice/ice02.sss	$00000  $00f43	$1903c
+#
+#	Credits color palette
+../color/ending.cpr			$000000 $00080	$19f7f
+#						(end  19fff)-rest 01h Empty Space

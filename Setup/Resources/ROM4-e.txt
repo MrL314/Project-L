@@ -1,0 +1,129 @@
+#----------------------------------------------------------------------------
+#		ROM 4 address (bank 0ch,0dh,0eh,0fh)
+#----------------------------------------------------------------------------
+#
+#
+#----------------------------------------------------------------------------
+#		bank C7h	(from c70000h-h    rest 23fh)
+#----------------------------------------------------------------------------
+#
+# Many font and a few icon gfx (2bpp)
+../back/chr/moji-e.cpr			$00000	$000b29	$018000
+#						(aac)
+#
+#Player and cup selection screen gfx (2bpp) & layout
+../select/select-e.bin			$00000	$000e6d	$018b29
+#						(e53)
+# Title and GP result screen gfx & layout - this is a compressed data pack.
+../title/title-e.bin			$00000	$001e44	$019996
+# Podium screen gfx & layout double compressed data pack, could incode code?
+../final/final-e.sss			$00000	$002853	$01b7da
+#			end 1E030---->>japanese Ver.=1e1c6
+#----------------------------------------------------------------------------
+#		bank C4h	( rest 0165h)
+#----------------------------------------------------------------------------
+#
+# Yoshi driver sprite
+../obj/kart/yossy.CGX			$00000	$06000	$02000
+#
+#----------------------------------------------------------------------------
+# c40000h-c42000h  				(19fcfh)	31h rest
+#----------------------------------------------------------------------------
+#
+#Common road gfx (4bpp rev) ? blocks, speed boost arrows etc.
+../mode7/chr/item.cpr	        $00000	$00594	$00000
+# Item sprites 
+../obj/others/item.cpr          $00000  $00beb  $00594		
+#
+# Mario Circuit color palettes
+../color/circuit.cpr			$00000	$00194	$0117f
+#
+# Ghost Valley color palettes
+../color/obake.cpr				$00000	$001b1	$01313
+#
+# Donut Plains color palettes
+../color/grass.cpr				$00000	$001b1	$014c4
+#
+# Bowser Castle color palettes
+../color/castle.cpr				$00000	$001ba	$01675
+#
+# Vanilla Lake color palettes
+../color/ice.cpr                $00000  $00191  $0182f
+#
+# Choco Island color palettes
+../color/dart.cpr				$00000	$0019b	$019c0
+#
+# Koopa Beach color palettes
+../color/sand.cpr				$00000	$001b0	$01b5b
+#
+# Rainbow Road color palettes
+../color/star.cpr				$00000	$001b0	$01d0b
+#					(01a6) - Empty Space
+# Rainbow Road road gfx (4bpp rev)
+../mode7/chr/star.cpr		$00000	$00114	$01ebb
+#
+#----------------------------------------------------------------------------
+#		BANK C5h			c50000h---
+#----------------------------------------------------------------------------
+#
+# Koopa driver sprite
+../obj/kart/kame.CGX			$00000	$06000	$0a000
+#
+#----------------------------------------------------------------------------
+# c50000h-0c52000h  				(09fbfh)	41h rest - Empty space
+#----------------------------------------------------------------------------
+#
+# Donut Plains road gfx (4bpp rev)
+../mode7/chr/grass.cpr      		$00000	$00c45	$08000
+#
+# Mario Circuit 2 track layout
+../mode7/scr/circuit/circuit04.sss 	$00000  $009f1	$08c45
+#
+# Koopa Beach road gfx (4bpp rev)
+../mode7/chr/sand.cpr	        	$00000	$0098d	$09636
+#
+#----------------------------------------------------------------------------
+#		BANK C6h			c60000h-----
+#----------------------------------------------------------------------------
+#
+#Toad driver sprite
+../obj/kart/kinopio.CGX			$00000	$06000	$12000
+#
+#----------------------------------------------------------------------------
+# c60000h-c62000h				(11fb4h)
+#----------------------------------------------------------------------------
+#
+# Chain Chomp sprite
+../obj/others/killer.cpr		$000000 $00189	$10000
+#
+# Ghost Valley road gfx (4bpp rev)
+../mode7/chr/obake.cpr      	$00000	$0039d	$10189
+#					(0399) - Size of obake.cpr after is 2 bytes of free space
+# Driver AI data for all tracks (20 GP and 4 Battle)  zones and targets(AI targets are also used as drop points for Lakitu)
+../drive/drive-data.bin         $000000 $01902  $10526
+#						
+# Menu music
+../sound/select.cpr     $00000  $0011e	$11e28
+#	
+# tan values for the AI to workout it's turning angle between points
+../bin/tan-data.cpr    	$00000  $00043  $11f46
+#							END 11f89 Empty space
+#----------------------------------------------------------------------------
+#		for sound  (Start 1e1c6 depend upon Japanese version!!!)
+#----------------------------------------------------------------------------
+#
+# Mario Circuit music
+../sound/circuit.cpr 	$00000	$00575	$01e301  
+#						
+# Battle Mode music
+../sound/battle.cpr		$00000	$004a0	$01e876
+#
+# Vanilla Lake music
+../sound/ice.cpr 		$00000 	$00473 	$01ed16
+#
+# Rainbow Road background layout
+../back/scr/star.cpr   	$00000  $000c7	$01f18a
+# Choco Island 1 track layout
+../mode7/scr/dart/dart03.sss            $00000	$00dad	$01f251
+#
+#			END 1fffeh - 1 byte free
