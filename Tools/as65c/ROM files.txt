@@ -1,0 +1,30 @@
+# format instruction line as <source_file>, <source_start_offset>, <rom_offset>, <data_size>
+
+
+../../Source/DAT/rom1-e.DAT, 0x010000, 0x28000, 0x8000
+../../Source/DAT/rom1-e.DAT, 0x018000, 0x38000, 0x7000
+
+../../Source/DAT/rom2-e.DAT, 0x000000, 0x48000, 0x5500
+../../Source/DAT/rom2-e.DAT, 0x010000, 0x68000, 0x8000
+../../Source/DAT/rom2-e.DAT, 0x018000, 0x78000, 0x8000
+
+../../Source/DAT/rom3-e.DAT, 0x000000, 0x00000, 0x8000
+../../Source/DAT/rom3-e.DAT, 0x008000, 0x10000, 0x8000
+../../Source/DAT/rom3-e.DAT, 0x010000, 0x20000, 0x8000
+../../Source/DAT/rom3-e.DAT, 0x018000, 0x30000, 0x8000
+
+../../Source/DAT/rom4-e.DAT, 0x000000, 0x40000, 0x8000
+../../Source/DAT/rom4-e.DAT, 0x008000, 0x50000, 0x8000
+../../Source/DAT/rom4-e.DAT, 0x010000, 0x60000, 0x8000
+../../Source/DAT/rom4-e.DAT, 0x018000, 0x70000, 0x8000
+
+../../Source/kimura/bin/OAM_data.bin, 0x00000, 0x5ee00,0x1200
+
+../../Source/kimura/bin/BG_unit.bin, 0x00000, 0x5d000, 0x0c00
+
+../../Source/kimura/bin/windeco1.bin, 0x00000, 0x5e770, 0x0690	
+
+
+#../../Source/kimura/bin/editchar.bin, 0x00000, 0x99000, 0x2800
+
+../../Source/kimura/bin/pole_data.bin, 0x00000, 0x5c800, 0x0800
