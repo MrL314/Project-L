@@ -30,7 +30,7 @@ For the open-source code, you may find the github here: https://github.com/MrL31
 Disclaimer
 ----------
 This program set of scripts and programs is provided free of charge and without warranty.
-It is not to be distributed with any addional files, these must be provided by the user at their own risk.
+It is not to be distributed with any additional files, these must be provided by the user at their own risk.
 
 
 Intro to Project L: By MrL314
