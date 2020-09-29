@@ -4,6 +4,8 @@
 version 0.5: Sep. 29, 2020
 
 
+QUICK DOWNLOAD: >>> https://github.com/MrL314/Project-L/archive/master.zip
+
 
 Contact MrL314: 
 	email: LFmisterL314@gmail.com
