@@ -67,7 +67,7 @@ Setup
 Before you can run this toolset you need to run the setup script. The setup process is automated, 
 but some files are required that you will need to supply yourself before you run setup.bat.
 
-1) .NET frame work the DATBuilder tool writen for this is in .NET and to run requres the .NET 
+1) .NET framework. The DATBuilder tool writen for this is in .NET, and to run requres the .NET 
    framework to be installed on your PC
 
 2) The following folders under \setup\ need to be populated
