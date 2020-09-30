@@ -76,6 +76,13 @@ but some files are required that you will need to supply yourself before you run
 	\setup\CAR\ with the contents of \NEWS_04\home\sugiyama\CAR
 	\setup\data\ with the contents of \NEWS_05\NEWS_05\home\kimura\kart\data.lzh
 	\setup\mak\ with the contents of \NEWS_05\NEWS_05\home\kimura\kart\mak.lzh
+	
+	MrL's Note:
+		If you are using 7zip to unzip the folder, it is fine to use the 
+		"Auto Rename" feature. We have accounted for that. 
+		HOWEVER, if you are using WinRAR to unzip and copy the contents,
+		DO NOT auto rename the files!!!! This will mess with certain 
+		scripts.
 
 3) You will also need to place a copy of the release ROM in the root of \setup\
 The ROM must be named: Super Mario Kart (USA).sfc
