@@ -1,7 +1,3 @@
-#----------------------------------------------------------------------------
-#		ROM 3 address	(bank C0h,C1h,02C,C3h)
-#----------------------------------------------------------------------------
-#
 #	Mario driver sprite
 ../obj/kart/mario.CGX		$00000	$06000	$02000
 #	Bowser driver sprite
@@ -10,9 +6,6 @@
 ../obj/kart/peach.CGX		$00000	$06000	$12000
 #	DK Jr. driver sprite
 ../obj/kart/cong.CGX		$00000	$06000	$1a000
-#----------------------------------------------------------------------------
-#		BANK C0h 		C00000h---C02000h
-#----------------------------------------------------------------------------
 #
 #	Ghost Pillar sprite
 ../obj/others/pole.cpr		$00000	$00334	$00000
@@ -44,11 +37,6 @@
 #	Demo recorded inputs (1 - Yoshi)
 ../bin/demo_yossy.bin	$00000	$000b0	$01f4c		
 #
-#				1ffch   		;REST 04H
-#----------------------------------------------------------------------------
-#		BANK C1h		C10000h---C12000h
-#----------------------------------------------------------------------------
-#
 #	Lakitu, shadow, coin and sparks sprites
 ../obj/others/j-s-c.bin 	$00000	$00aa5	$08000
 #
@@ -67,11 +55,6 @@
 #					(04e7) compressed size $20 free space
 #	Squashed driver sprites
 ../obj/others/perapera.cpr  $00000  $00363  $09c0e
-#
-#						(end 9f71)-08fh rest Empty Space
-#----------------------------------------------------------------------------
-#		BANK C2h		C20000h---C22000h
-#----------------------------------------------------------------------------
 #
 #	Mario Circuit Track background graphics (2bpp)
 ../back/chr/circuit.cpr		$00000	$00148	$10000
@@ -130,10 +113,6 @@
 #
 #	Demo recorded input Koopa Troopa
 ../bin/demo_kame.bin	$00000  $0000f0	$11d23
-#						(end 11e01H)    03Fh REST Empty Space
-#----------------------------------------------------------------------------
-#		BANK C3h		C30000h---C32000h
-#----------------------------------------------------------------------------
 #
 #	Driver face and little position number sprites
 ../obj/others/mark.cpr		$00000	$00b9d	$18000
