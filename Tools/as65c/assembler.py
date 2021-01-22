@@ -460,7 +460,8 @@ def assembleFile(filename, ext_vars={}, force_assemble=False):
 
 							ind = 0
 							for line in file_lines:
-								LINES.insert(lnum + ind, LineObject.Line(line, file=path+file, line_number=ind+1, include_level=LINE_OBJ.get_include_level() + 1))  # insert included file lines
+								new_line = LineObject.Line(line, file=path+file, line_number=ind+1, include_level=LINE_OBJ.get_include_level() + 1)
+								LINES.insert(lnum + ind + 1, new_line)  # insert included file lines
 								ind += 1
 
 
@@ -484,29 +485,6 @@ def assembleFile(filename, ext_vars={}, force_assemble=False):
 
 
 
-		try:
-			f = open(FILE_PATH + FILE_NAME.split(".")[0] + ".rel")
-
-			f.close()
-		except:
-			force_assemble = True
-
-
-		if not force_assemble:
-
-
-			for line in LINES:
-				hash_text += line.get_raw()
-
-
-			curr_hash = hashlib.sha256(hash_text.encode())
-
-		# get hash of previous version of file
-
-		if (not force_assemble) and curr_hash.hexdigest() == get_hash(filename):
-			succeeded = True
-			print("[INFO] No changes to " + FILE_NAME + " detected. Skipping re-assembly.")
-			raise EOFError() # this is ONLY so assembly process doesnt run if file is not changed
 
 
 
@@ -519,6 +497,7 @@ def assembleFile(filename, ext_vars={}, force_assemble=False):
 		macro_var_ind = 0
 		curr_macro_name = ""
 		curr_macro_lines = []
+		curr_macro_raw_lines = []
 		macro_vars_by_length = []
 		while line_ind < len(LINES):
 			LINE_OBJ = LINES[line_ind]
@@ -533,12 +512,14 @@ def assembleFile(filename, ext_vars={}, force_assemble=False):
 				LINES[line_ind].is_macro(True)
 
 				raw_line = LINE_OBJ.get_raw()
+				real_raw = raw_line
 				for var in macro_vars_by_length:
 					vind = curr_macro_vars.index(var)
 
 					raw_line = raw_line.replace(var, "MACRO_VARIABLE_"+str(vind))
 
 				curr_macro_lines.append(raw_line)
+				curr_macro_raw_lines.append(real_raw)
 
 
 
@@ -567,15 +548,22 @@ def assembleFile(filename, ext_vars={}, force_assemble=False):
 					cind = len(LINE)
 
 				elif LINE[cind]["type"] == util.DATA_TYPES.END_MACRO:
-					curr_macro_lines = curr_macro_lines[:-1]
+					curr_macro_lines = curr_macro_lines
 					LINES[line_ind].is_macro(True)
 					in_macro = False
 					macros[curr_macro_name] = {
 						"name": curr_macro_name,
 						"macro_lines": curr_macro_lines,
-						"macro_vars": curr_macro_vars
+						"macro_vars": curr_macro_vars,
+						"raw_lines": curr_macro_raw_lines
 					}
 					cind = len(LINE)
+					curr_macro_lines = []
+					curr_macro_raw_lines = []
+					curr_macro_vars = []
+					macro_var_ind = []
+					curr_macro_name = ""
+					macro_vars_by_length = []
 
 				cind += 1 
 
@@ -639,10 +627,10 @@ def assembleFile(filename, ext_vars={}, force_assemble=False):
 
 						#print(FUNC_LINE)
 
-						LINES[line_ind] = LineObject.Line(FUNC_LINE, line_number=LINE_OBJ.get_line_num(), file=LINE_OBJ.get_file_path() + LINE_OBJ.get_file_name(), include_level=LINE_OBJ.get_include_level()+1, macro_line=RAW)
+						#LINES[line_ind] = LineObject.Line(FUNC_LINE, line_number=LINE_OBJ.get_line_num(), file=LINE_OBJ.get_file_path() + LINE_OBJ.get_file_name(), include_level=LINE_OBJ.get_include_level()+1, macro_line=RAW)
 
-
-						for macro_line in MACRO["macro_lines"][1:]:
+						lind = 0
+						for macro_line in MACRO["macro_lines"][:-1]:
 							FUNC_LINE = macro_line
 							vind = 0
 							for var in variable_vals:
@@ -651,16 +639,51 @@ def assembleFile(filename, ext_vars={}, force_assemble=False):
 
 							#print(FUNC_LINE)
 
-							LINES.insert(line_ind, LineObject.Line(FUNC_LINE, line_number=LINE_OBJ.get_line_num(), file=LINE_OBJ.get_file_path() + LINE_OBJ.get_file_name(), include_level=LINE_OBJ.get_include_level()+1, macro_line=RAW))
+							LINES.insert(line_ind + lind + 1, LineObject.Line(FUNC_LINE, line_number=LINE_OBJ.get_line_num(), file=LINE_OBJ.get_file_path() + LINE_OBJ.get_file_name(), include_level=LINE_OBJ.get_include_level()+1, macro_line='MACRO ' + MACRO["name"] + ':\t\t' + FUNC_LINE))
 
 
+							lind += 1
 
-
+						LINES.insert(line_ind + lind + 1, LineObject.Line(MACRO["macro_lines"][-1], line_number=LINE_OBJ.get_line_num(), file=LINE_OBJ.get_file_path() + LINE_OBJ.get_file_name(), include_level=LINE_OBJ.get_include_level()+1, macro_line='MACRO ' + MACRO["name"] + ':\t\t' + MACRO["raw_lines"][-1]))
+	
 						cind = len(LINE)
 
 				cind += 1
 
 			line_ind += 1
+
+
+
+
+
+
+		try:
+			f = open(FILE_PATH + FILE_NAME.split(".")[0] + ".rel")
+
+			f.close()
+		except:
+			force_assemble = True
+
+
+		if not force_assemble:
+
+
+			for line in LINES:
+				hash_text += line.get_raw()
+
+
+			curr_hash = hashlib.sha256(hash_text.encode())
+
+		# get hash of previous version of file
+
+		if (not force_assemble) and curr_hash.hexdigest() == get_hash(filename):
+			succeeded = True
+			print("[INFO] No changes to " + FILE_NAME + " detected. Skipping re-assembly.")
+			raise EOFError() # this is ONLY so assembly process doesnt run if file is not changed
+
+
+
+
 
 
 
