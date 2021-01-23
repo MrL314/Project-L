@@ -627,7 +627,9 @@ def assembleFile(filename, ext_vars={}, force_assemble=False):
 
 						#print(FUNC_LINE)
 
-						#LINES[line_ind] = LineObject.Line(FUNC_LINE, line_number=LINE_OBJ.get_line_num(), file=LINE_OBJ.get_file_path() + LINE_OBJ.get_file_name(), include_level=LINE_OBJ.get_include_level()+1, macro_line=RAW)
+						LINES[line_ind] = LineObject.Line(";", line_number=LINE_OBJ.get_line_num(), file=LINE_OBJ.get_file_path() + LINE_OBJ.get_file_name(), include_level=LINE_OBJ.get_include_level()+1)
+						#LINES[line_ind] = LineObject.Line(";", line_number=LINE_OBJ.get_line_num(), file=LINE_OBJ.get_file_path() + LINE_OBJ.get_file_name(), include_level=LINE_OBJ.get_include_level()+1, macro_line=RAW)
+						#print(LINES[line_ind].get_raw())
 
 						lind = 0
 						for macro_line in MACRO["macro_lines"][:-1]:
@@ -644,7 +646,7 @@ def assembleFile(filename, ext_vars={}, force_assemble=False):
 
 							lind += 1
 
-						LINES.insert(line_ind + lind + 1, LineObject.Line(MACRO["macro_lines"][-1], line_number=LINE_OBJ.get_line_num(), file=LINE_OBJ.get_file_path() + LINE_OBJ.get_file_name(), include_level=LINE_OBJ.get_include_level()+1, macro_line='MACRO ' + MACRO["name"] + ':\t\t' + MACRO["raw_lines"][-1]))
+						#LINES.insert(line_ind + lind + 1, LineObject.Line(MACRO["macro_lines"][-1], line_number=LINE_OBJ.get_line_num(), file=LINE_OBJ.get_file_path() + LINE_OBJ.get_file_name(), include_level=LINE_OBJ.get_include_level()+1, macro_line='MACRO ' + MACRO["name"] + ':\t\t' + MACRO["raw_lines"][-1]))
 	
 						cind = len(LINE)
 
