@@ -1,0 +1,64 @@
+Epic Compress 1.0 - By Dirtbag, based on orginal code by Stifu
+- Part of the Project L Tool Set
+
+Epic Compress takes the compression algorithm from Epic Edit's code and turns it into a command line based tool for SMK assist editing.
+The aim of this was to replace Luna Compress with a more flexible tool and using the better compression ratio from Epic Edit's Codec.
+This tool was named Epic Compress to as homage to the excellent Epic Edit and to pay respects to the origins of the codec that this tool uses at its core.
+
+Epic Edit is an amazing Mario Kart Editor by Stifu. and can be found here https://epicedit.stifu.fr/
+Project-L can be found here: https://github.com/MrL314/Project-L/
+
+Features
+
+- Compress a whole file into a new file
+- Compress a whole file and insert into a file at a offset address(i.e. ROM)
+- Compress data from start offset to end of file into a new file
+- Compress from start offset to end offset into new file
+- Compress from start offset to end and insert into a file at a offset address(i.e. ROM)
+- Compress from start offset to end offset and insert into a file at a offset address(i.e. ROM)
+- Double compress a whole file into a new file
+- Double compress a whole file and insert into a file at a offset address(i.e. ROM)
+- Double compress data from start offset to end of file into a new file
+- Double compress from start offset to end offset into new file
+- Double compress from start offset to end and insert into a file at a offset address(i.e. ROM)
+- Double compress from start offset to end offset and insert into a file at a offset address(i.e. ROM)
+- Decompress from file
+- Decompress from offset in file 
+- Double decompress from file
+- Double decompress from offset in file (i.e. ROM)
+- Extract raw data from file between start and end offsets
+- Insert into raw data file at offset
+- Limit feature prevent data being inserted in to ROM that is bigger than a set size
+- Wait feature - "Press any key"
+- Overwrite feature to prevent a file that already exists being overwritten
+
+
+Usage:
+
+EpicCompress.exe <Input File> <Output File> -compress or -decompress or -insert -double -wait -overwrite -offset {value in hex}
+
+Files to use, both must be specified:
+
+        <Input File>: The file you want to extract data from
+        <Output File>: The file you want to import data into, can be an existing file or a new file
+
+Mode of use pick one of the following:
+
+        -compress: Compress the data
+        -decompress: Decompress the data
+        -insert: Insert the data as is, without compression or decompression
+
+Optional commands
+
+        -double: Double compress or decompress the data
+        -wait: Will wait for a key press before exiting
+        -overwrite: Use to overwrite the destination file if that file already exists
+        -offset <value in hex>: The offset you want to compress or inert to or decompress from.
+         When not used in conjunction with -compress will assume you are compressing to a new file
+
+Examples:
+
+        EpicCompress.exe smk.smc bc3.layout -decompress -double -offset 214EE
+        EpicCompress.exe bc3.layout smk.smc -compress -double -offset 214EE
+        EpicCompress.exe AIZones smk.smc -Insert -offset 1FF9B
+        EpicCompress.exe smk.smc mole.gfx -decompress -offset 5D6 -wait

@@ -1,7 +1,7 @@
 ######################################
 #  PROJECT L  by MrL314 and Dirtbag  #
 ######################################
-version 0.5: Sep. 29, 2020
+version 1.0: Nov. 29, 2021
 
 
 QUICK DOWNLOAD: >>> https://github.com/MrL314/Project-L/archive/master.zip
@@ -20,6 +20,10 @@ Special thanks to:
 	Dirtbag
 	SmorBjorn
 	xprism
+	ScouB
+	atomicdesolation
+	stifu
+	venen
 	Everyone in the SMK Workshop community!!
 	and YOU!
 
@@ -38,8 +42,8 @@ Intro to Project L: By MrL314
 So you're looking to assemble an SNES game? Well you've come to the right place.
 PROJECT L is a general purpose assembler and linker for SNES games. The main 
 project in mind was to be able to assemble Super Mario Kart directly from the
-source files, however we have plans to make this project more general purpose in
-the future!
+source files, however the recreated tools have also been used to rebuild other sources
+as well!
 
 This project is in no way affiliated with Nintendo. We have no connections to Nintendo,
 so this entire project is a third party SDK for the SNES. As such, we expect most of you
@@ -125,10 +129,7 @@ The output ROM will be in the folder \Output\
 ----------
 ## Tip ##:
 ----------
-When compressing all, double tap Enter when it says "press any key to continue".  This will auto press any key 
-for the rest of the prompts.  At some point, we plan to swap out the compression tool to the one in EE, and 
-make it stand-alone tool.
-
+When compressing all, if you would like to pause in between each compression, type the word `wait` in the main build menu to toggle the pausing. This is useful if you want to debug anything going wring during the asset building process.
 
 
 
@@ -338,7 +339,7 @@ Advanced users
 If you want to edit the build.bat to make it work for your build.  Load the build.bat in a hex editor (take a backup first)
 and delete FF FE 0D 0A from the start.
 
-Why have I done this?  If you can't use a Hex editor you shouldn't be messing with the bat file.
+Why have I done this?  You should not be messing with the build file unless you absolutely know what you are doing.
 
 
 Editing files
@@ -363,8 +364,38 @@ Binaries:
 Code:
 	Visual Studio
 	Sublime Text 3
+	Notepad++
 
 
+
+
+
+
+----------------------------------
+ Building the Debug Mode Versions
+----------------------------------
+As you may or may not be aware, Super Mario Kart has a very extensive set of code for debugging!
+However, this debugging code was not entirely upkept during development. But, the source code is
+still included, and assembles perfectly well with the retail versions! There are a few caveats
+to playing and using these debug features though. Some features require the use of SFXDOS, which
+is a Nintendo in-house OS for interfacing with the SNES, and requires special hardware. As such,
+you will need a special emulator to use those features. I have provided a link to download such
+an emulator capable of doing so (see below). You will need to do a couple other things as well to 
+ensure that the game functions as normal. 
+
+For a rough guide on how to use the debugging features, see here: 
+    https://tcrf.net/Proto:Super_Mario_Kart/Debugging_Menus
+
+If you have a .srm file that has a size of 2KB, you will need to either delete the file or expand 
+the file to 32KB, otherwise bsnes will not map the SRAM properly. 
+
+
+To build the debug version of the ROM, use option 42 in the build.bat menu to toggle debug on 
+and off. Then, build as usual.
+
+
+BSNES-PLUS SFXDOS Download Mirror: 
+    https://www.mediafire.com/file/g3rlpq924jok0uu/bsnes-plus-v05.89-sfx-dos-fbmvffpo.zip/file
 
 
 

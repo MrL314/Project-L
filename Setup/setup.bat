@@ -76,18 +76,14 @@ xcopy /s /y .\Resources\ROM4-e.txt .\..\Source\Assets\rom
 
 
 
-title Setup Script 1.0
+title Setup Script 1.1
 REM
 REM Edit the below to the name of the tools you want to use to compress, decompress and build DAT files.
 REM
-SET compress=.\recomp.exe
-SET LundaCompressPerams=0 4 0
-SET LundaDecompressPerams=0 4 0
-SET decomp=.\decomp.exe
+SET decomp=.\EpicCompress.exe
 SET buildDAT=toDat.py
-SET DLL="Lunar Compress.dll"
 SET ToolsPath=.\..\tools\Compress\
-SET ROM=".\Super Mario Kart (USA).sfc"
+SET ROM="Super Mario Kart (USA).sfc"
 SET createSourcePath="createSource\"
 SET createSource="createSource.exe"
 REM
@@ -97,7 +93,8 @@ SET ROM1=rom1-e.txt
 SET ROM2=rom2-e.txt
 SET ROM3=rom3-e.txt
 SET ROM4=rom4-e.txt
-cls
+rem cls
+ECHO.
 ECHO Creating Source Code
 cd %ToolsPath%..\%createSourcePath%
 %createSource%
@@ -179,28 +176,46 @@ call :decompress ice ".\..\Source\Assets\color\" ".\..\..\..\setup" col 4182F
 call :decompress dart ".\..\Source\Assets\color\" ".\..\..\..\setup" col 419C0
 call :decompress sand ".\..\Source\Assets\color\" ".\..\..\..\setup" col 41B5B
 call :decompress star ".\..\Source\Assets\color\" ".\..\..\..\setup" col 41D0B
+call :extract yoshi ".\..\Source\Assets\obj\kart" ".\..\..\..\..\setup" CGX 42000 47fff
 GOTO Exit
 
+:extract
 
+REM Args 1 filename 2 path 3 return path 4 file extention 5 offset
+
+copy %ToolsPath%%decomp% %2 /y
+copy %ROM% %2 /y
+
+cd %2
+rem cls
+ECHO Extracting %1
+%decomp% %ROM% %1.%4 -extract  %5 %6
+
+del %decomp%
+del %ROM%
+cd %3
+prompt
+exit /b
 
 :decompress
 REM Args 1 filename 2 path 3 return path 4 file extention 5 offset
 
 copy %ToolsPath%%decomp% %2 /y
-copy %ToolsPath%%dll% %2 /y
 copy %ROM% %2 /y
 
 cd %2
-cls
-REM prompt Running Command: 
+rem cls
 
-%decomp% %ROM% %1.%4 %5 4 0
+ECHO Decompressing %1
+%decomp% %ROM% %1.%4 -decompress -offset %5
+
 del %decomp%
-del %dll%
 del %ROM%
 cd %3
 prompt
 exit /b
 :Exit
 echo Setup complete > setup
-cls
+echo.
+echo Setup complete
+pause

@@ -9,9 +9,8 @@
 ../title/title-e.bin			$00000	$001e44	$019996
 # Podium screen gfx & layout double compressed data pack, could incode code?
 ../final/final-e.sss			$00000	$002853	$01b7da
-#
 # Yoshi driver sprite
-../obj/kart/yossy.CGX			$00000	$06000	$02000
+../obj/kart/yoshi.CGX			$00000	$06000	$02000
 #
 #Common road gfx (4bpp rev) ? blocks, speed boost arrows etc.
 ../mode7/chr/item.cpr	        $00000	$00594	$00000
@@ -41,7 +40,6 @@
 #
 # Rainbow Road color palettes
 ../color/star.cpr				$00000	$001b0	$01d0b
-#					(01a6) - Empty Space
 # Rainbow Road road gfx (4bpp rev)
 ../mode7/chr/star.cpr		$00000	$00114	$01ebb
 #
@@ -57,15 +55,16 @@
 # Koopa Beach road gfx (4bpp rev)
 ../mode7/chr/sand.cpr	        	$00000	$0098d	$09636
 #
+#
 #Toad driver sprite
 ../obj/kart/kinopio.CGX			$00000	$06000	$12000
+#
 #
 # Chain Chomp sprite
 ../obj/others/killer.cpr		$000000 $00189	$10000
 #
 # Ghost Valley road gfx (4bpp rev)
 ../mode7/chr/obake.cpr      	$00000	$0039d	$10189
-#					(0399) - Size of obake.cpr after is 2 bytes of free space
 # Driver AI data for all tracks (20 GP and 4 Battle)  zones and targets(AI targets are also used as drop points for Lakitu)
 ../drive/drive-data.bin         $000000 $01902  $10526
 #						
@@ -74,7 +73,7 @@
 #	
 # tan values for the AI to workout it's turning angle between points
 ../bin/tan-data.cpr    	$00000  $00043  $11f46
-#							END 11f89 Empty space
+#
 # Mario Circuit music
 ../sound/circuit.cpr 	$00000	$00575	$01e301  
 #						
@@ -89,4 +88,3 @@
 # Choco Island 1 track layout
 ../mode7/scr/dart/dart03.sss            $00000	$00dad	$01f251
 #
-#			END 1fffeh - 1 byte free

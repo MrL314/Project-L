@@ -1,7 +1,7 @@
 ÿþ
 @echo off
 cls
-title ROM Builder 1.0
+title ROM Builder 1.1
 
 REM Check setup has been run
 
@@ -15,10 +15,8 @@ REM Edit the below to the name of the tools you want to use to compress, decompr
 REM
 SET comppath=".\Compress\"
 SET DATpath=".\DATBuilder\"
-SET compress=recomp.exe
-SET LundaCompressPerams=0 4 0
-SET decomp=decomp.exe
-SET DLL="Lunar Compress.dll"
+SET compress=EpicCompress.exe
+SET decomp=EpicCompress.exe
 SET ToolsPath=".\tools\"
 SET game=".\OUTPUT\Super Mario Kart (U).sfc"
 
@@ -29,14 +27,18 @@ SET CompilerPath=".\tools\as65c\"
 SET Compiler=.\createROM.bat
 
 REM
-REM Edit the name of ROM files to build to DAT
+REM Setting the region to build - Default US
+REM
+SET REGION= NTSC-US
+REM
+REM Edit the name of ROM files to build to DAT - Default US
 REM
 SET ROM1=ROM1-E.txt
 SET ROM2=ROM2-E.txt
 SET ROM3=ROM3-E.txt
 SET ROM4=ROM4-E.txt
 REM
-REM Edit the name of DAT files to output
+REM Edit the name of DAT files to output - Default US
 REM
 SET DAT1=".\..\..\DAT\ROM1-E.DAT"
 SET DAT2=".\..\..\DAT\ROM2-E.DAT"
@@ -45,20 +47,33 @@ SET DAT4=".\..\..\DAT\ROM4-E.DAT"
 
 SET track=
 
+SET DEBUG_TOGGLE=DEBUG_OFF
+SET WAIT=
+
 :MENU
 @echo off
 cd %~dp0
-title ROM Builder 1.0
+title ROM Builder 1.1
+IF "%DEBUG_TOGGLE%"=="DEBUG_OFF" (
+	SET Build_Mode=Retail
+) ELSE (
+	SET Build_Mode= Debug
+)
+IF "%WAIT%"=="-wait" (
+	SET Wait_Mode=On 
+) ELSE (
+	SET Wait_Mode=Off
+)
 
 SET M=nul
 cls
 color 0
 
-ECHO						The SMK Workshop ROM Builder (ver. 1.0)
-ECHO. 
+ECHO						The SMK Workshop ROM Builder (ver. 1.1)                            
+ECHO                                                                                           [ROM Target: %REGION% %Build_Mode%]
+ECHO  0) Build all
 ECHO  1) Build DAT files
 ECHO  2) Compress all files
-ECHO.
 ECHO	   View values to build individual assets:
 ECHO		B) Track Backgrounds
 ECHO		G) Graphics
@@ -67,8 +82,7 @@ ECHO		P) Pallets
 ECHO		T) Tracks
 ECHO		O) Other
 ECHO.
-ECHO  3) Build packs all data packs
-ECHO.
+ECHO  3) Build all data packs
 ECHO       Build individual data packs:
 ECHO		31) Lakitu, Shadow and Coins
 ECHO		32) Title + Results (Eng)
@@ -79,8 +93,11 @@ ECHO		36) Player Select (Eng)
 REM ECHO		37) Player Select (Jap)
 ECHO.
 ECHO  4) Compile ROM (The output ROM will be in .\OUTPUT\)
+ECHO		41) Only add assets to existing code file
+ECHO		42) Toggle retail or debug version build (Currently: %Build_Mode%)
+ECHO.
 ECHO  5) Load ROM
-ECHO  6) Exit												?) Help
+ECHO  6) Exit											           	?) Help
 ECHO.
 SET /P M=Type your option then press ENTER: 
 
@@ -94,8 +111,7 @@ IF /I %M%==t GOTO :TrackMenu
 IF /I %M%==o GOTO :OtherMenu
 IF /I %M%==b GOTO :BackgroundsMenu
 IF /I %M%==5 GOTO :Load
-
-
+IF /I %M%==0 call :BuildAll
 IF /I %M%==1 GOTO BuildAllDAT
 IF /I %M%==2 GOTO CompressAll
 IF /I %M%==t1 call :TrackCompress sand01 ".\source\assets\mode7\scr\sand\" scr
@@ -122,6 +138,12 @@ IF /I %M%==t21 call :TrackCompress battle05 ".\source\assets\mode7\scr\battle\" 
 IF /I %M%==t22 call :TrackCompress ice02 ".\source\assets\mode7\scr\ice\" scr
 IF /I %M%==t23 call :TrackCompress circuit04 ".\source\assets\mode7\scr\circuit\" scr
 IF /I %M%==t24 call :TrackCompress dart03 ".\source\assets\mode7\scr\dart\" scr
+IF /I %M%==314 color 0A 
+IF /I %M%==mario color 04
+IF /I %M%==dirtbag color 05
+IF /I %M%==clean call :clean_up
+IF /I %M%==fullclean call :full_clean_up
+
 
 IF /I %M%==G1 call :compress lost ".\source\assets\obj\others\" cgx
 IF /I %M%==G2 call :compress circuit ".\source\assets\mode7\chr\" cm7
@@ -210,9 +232,25 @@ IF /I %M%==34 call :final-e
 REM IF /I %M%==35 call :podium-j
 IF /I %M%==36 call :select-e 
 REM IF /I %M%==37 call :select-j
-IF /I %M%==4 call :compile
+IF /I %M%==4 call :compile_all
+
+REM IF /I %M%==40 call :compile_code
+IF /I %M%==41 call :compile_assets
+IF /I %M%==42 call :toggle_debug
+IF /I %M%==wait call :toggle_wait
+
 
 IF /I %M%==6  GOTO Exit
+GOTO MENU
+
+:BuildAll
+call :J-S-C
+call :select-e
+call :final-e
+call :title-e
+call :CompressAllCommand
+call :BuildAllDATfunction
+call :compile_all
 GOTO MENU
 
 :BuildAllDataPacks
@@ -241,18 +279,14 @@ exit /b
 :final-e
 @echo off
 call :BuildPack final-e.ROM ".\source\assets\final" final-e.DAT 18944
-call :compress final-e ".\source\assets\final" DAT
-del ".\source\assets\final\final-e.bin"
-rename ".\source\assets\final\final-e.cpr" final-e.bin
-call :compress final-e ".\source\assets\final" bin
-del ".\source\assets\final\final-e.sss"
-rename ".\source\assets\final\final-e.cpr" final-e.sss
+call :TrackCompress final-e ".\source\assets\final" DAT
 exit /b
 
 :title-e
 @echo off
 call :BuildPack title-e.ROM ".\source\assets\title" title-e.DAT 17408
 call :compress title-e ".\source\assets\title" DAT
+
 del ".\source\assets\title\title-e.bin"
 rename ".\source\assets\title\title-e.cpr" title-e.bin
 
@@ -392,6 +426,10 @@ pause
 GOTO MENU
 
 :CompressAll
+CALL CompressAllCommand
+GOTO MENU
+
+:CompressAllCommand
 call :TrackCompress sand01 ".\source\assets\mode7\scr\sand\" scr
 call :TrackCompress star01 ".\source\assets\mode7\scr\star\" scr
 call :TrackCompress circuit01 ".\source\assets\mode7\scr\circuit\" scr
@@ -483,25 +521,28 @@ call :compress ice ".\source\assets\color\" col
 call :compress dart ".\source\assets\color\" col
 call :compress sand ".\source\assets\color\" col
 call :compress star ".\source\assets\color\" col
-GOTO MENU
+exit /b
 
 :BuildAllDAT
+call :BuildAllDATFunction
+GOTO MENU
 
+
+:BuildAllDATFunction
 REM Copying BuildDAT tool to source dir to run for relative file paths
 REM copy %ToolsPath%%DATpath%%buildDAT% ".\source\assets\rom\" /y .\..\..\DAT\
 cls
 cd ".\source\assets\rom\"
 prompt Running Command: 
-@echo on
+@echo off
 .\..\..\..\%ToolsPath%%DATpath%%buildDAT% %ROM1% %DAT1%
 .\..\..\..\%ToolsPath%%DATpath%%buildDAT% %ROM2% %DAT2%
 .\..\..\..\%ToolsPath%%DATpath%%buildDAT% %ROM3% %DAT3%
 .\..\..\..\%ToolsPath%%DATpath%%buildDAT% %ROM4% %DAT4%
 
-
 cd %~dp0
 prompt
-GOTO MENU
+exit /b
 
 
 
@@ -526,16 +567,13 @@ exit /b
 :TrackCompress
 cls
 copy %ToolsPath%%comppath%%compress% %2 /y
-copy %ToolsPath%%comppath%%dll% %2 /y
 
 cd %2
 cls
 prompt Running Command: 
-%compress% %1.%3 %1.tmp %LundaCompressPerams%
-%compress% %1.tmp %1.sss %LundaCompressPerams%
+%compress% %1.%3 %1.sss -compress -double -overwrite %WAIT%
 @echo Compressed %1
 del %compress%
-del %dll%
 cd %~dp0
 
 exit /b
@@ -544,23 +582,55 @@ exit /b
 REM Args 1 filename 2 path 3 return path 4 file extention
 cls
 copy %ToolsPath%%comppath%%compress% %2 /y
-copy %ToolsPath%%comppath%%dll% %2 /y
 
 cd %2
 cls
 prompt Running Command: 
-%compress% %1.%3 %1.cpr %LundaCompressPerams%
+%compress% %1.%3 %1.cpr -compress -overwrite %WAIT%
 @echo Compressed %1
 del %compress%
-del %dll%
 cd %~dp0
 prompt
 exit /b
 
-:compile
+:compile_all
 cls
 CD %CompilerPath%
-call createROM.bat
+call createROM.bat DO_ALL %DEBUG_TOGGLE%
+cd %~dp0
+exit /b
+
+:compile_code
+cls
+CD %CompilerPath%
+call createROM.bat ASSEMBLE_ONLY %DEBUG_TOGGLE%
+cd %~dp0
+exit /b
+
+:compile_assets
+cls
+CD %CompilerPath%
+call createROM.bat ASSETS_ONLY %DEBUG_TOGGLE%
+cd %~dp0
+exit /b
+
+:toggle_debug
+cls
+IF "%DEBUG_TOGGLE%"=="DEBUG_OFF" (
+	SET DEBUG_TOGGLE=DEBUG_ON
+) ELSE (
+	SET DEBUG_TOGGLE=DEBUG_OFF
+)
+cd %~dp0
+exit /b
+
+:toggle_wait
+cls
+IF "%WAIT%"=="-wait" (
+	SET WAIT=
+) ELSE (
+	SET WAIT=-wait
+)
 cd %~dp0
 exit /b
 
@@ -568,6 +638,57 @@ exit /b
 
 IF EXIST %game% (%game%) ELSE (ECHO %game% not found.  Compile first & pause)
 GOTO :MENU
+
+
+
+:clean_up
+
+call :delete_file %ToolsPath%\as65c\fhist.ahist
+call :delete_file %ToolsPath%\as65c\*.map
+call :delete_file %ToolsPath%\as65c\*.hex
+
+call :delete_file_recursive .\Source\*.rel
+call :delete_file_recursive .\Source\*.lis
+call :delete_file .\Output\*.rom
+call :delete_file .\Output\*.sfc
+	
+cd %~dp0
+
+exit /b
+
+
+:full_clean_up
+
+call :clean_up
+
+call :delete_subdirs .\Source\Assets
+call :delete_subdirs .\Source\kimura
+call :delete_file .\Source\DAT\*.DAT
+call :delete_file .\Setup\setup
+
+
+cd %~dp0
+cls
+echo CLEANED SETUP DATA. EXITING.
+pause
+exit
+
+exit /b
+
+
+:delete_file
+IF EXIST %1 del %1
+exit /b
+
+:delete_file_recursive
+del /S /Q %1 2>NUL
+exit /b
+
+:delete_subdirs
+cd %1
+for /D %%p in (*) do rmdir /S /Q %%p
+cd %~dp0
+exit /b
 
 :Exit
 cls
