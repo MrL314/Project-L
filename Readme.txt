@@ -1,7 +1,7 @@
 ######################################
 #  PROJECT L  by MrL314 and Dirtbag  #
 ######################################
-version 1.0: Nov. 29, 2021
+version 1.0: Dec. 1, 2021
 
 
 QUICK DOWNLOAD: >>> https://github.com/MrL314/Project-L/archive/master.zip
@@ -10,7 +10,6 @@ QUICK DOWNLOAD: >>> https://github.com/MrL314/Project-L/archive/master.zip
 Contact MrL314: 
 	email: LFmisterL314@gmail.com
 	discord: MrL314#8106
-	Patreon: https://www.patreon.com/MrL314 (see "Final notes")
 
 Contact Dirtbag:
 	discord: Dirtbag#3153
@@ -412,17 +411,6 @@ If you are interested in updates to this project, or Super Mario Kart in general
 Super Mario Kart Workshop Discord!
 	https://discord.gg/QNcKNQC
 
-
-MrL's Patreon:
-This program is provided completely free of charge, at no cost to the user. However, it has been
-brought to my attention that some people would like to donate in order to support me in my efforts
-in making more -- as well as better -- tools for the community as a whole. If this applies to you, 
-donate via the link below. 10% of all proceeds earned through that donation link will go towards 
-the Autistic Self Advocacy Network, a charity devoted to the betterment of autistic and disabled
-individuals.
- 
-Patreon:
-	https://www.patreon.com/MrL314 
 
 
 
