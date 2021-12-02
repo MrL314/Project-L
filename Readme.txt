@@ -10,7 +10,7 @@ QUICK DOWNLOAD: >>> https://github.com/MrL314/Project-L/archive/master.zip
 Contact MrL314: 
 	email: LFmisterL314@gmail.com
 	discord: MrL314#8106
-	twitter: @LF_MrL314
+	twitter: @LF_MrL314 [ https://twitter.com/LF_MrL314 ]
 
 Contact Dirtbag:
 	discord: Dirtbag#3153
