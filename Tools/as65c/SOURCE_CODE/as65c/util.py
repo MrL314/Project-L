@@ -2,7 +2,7 @@
 #   Helper data and functions for as65c assembler
 #      by MrL314
 #
-#        [ Aug.28, 2021 ]
+#        [ Dec.4, 2021 ]
 ###################################################
 
 
@@ -62,6 +62,7 @@ global STORAGE_DIRECTIVE_SYMBOLS
 global MACRO_SYMBOLS
 global END_MACRO_SYMBOLS
 global OTHER_SYMBOLS
+global HASH_SYMBOLS
 global PARSING_SYMBOLS
 global RESERVED
 global RESERVED_FLAT
@@ -364,6 +365,11 @@ MACRO_LOCAL_SYMBOLS = {"local", "LOCAL"}
 # symbols that arent compiled but I don't know what to do with them yet
 #OTHER_SYMBOLS = ("extend", "list", "nolist", "rel", "sall", "xall", "EXTEND", "LIST", "NOLIST", "REL", "SALL", "XALL")
 OTHER_SYMBOLS = {"extend", "list", "nolist", "nlist", "rel", "sall", "xall", "EXTEND", "LIST", "NOLIST", "NLIST", "REL", "SALL", "XALL"}
+
+
+# symbols that are important to checking the hash of the built file
+#HASH_SYMBOLS = set(flatten_list((CONDITIONAL_SYMBOLS, MACRO_SYMBOLS, END_MACRO_SYMBOLS, INCLUDE_SYMBOLS )))
+HASH_SYMBOLS = set()
 
 
 # list of symbols used in parsing the data

@@ -42,7 +42,12 @@ class LineException(Error):
 				err_msg += ", index " + str(self.line_ind)
 
 		if self.msg != None:
-			err_msg += ":\n\t" + str(self.msg)
+			err_msg += ":\n"
+
+			if self.line_num != -1:
+				err_msg += str(self.line_num) + ":"
+
+			err_msg += "\t" + str(self.msg).lstrip()
 
 		#super().__init__(err_msg)
 		self.err_msg = err_msg
@@ -50,6 +55,20 @@ class LineException(Error):
 	def __str__(self):
 		return self.err_msg
 
+
+class LineError(LineException):
+	"""General error thrower for errors in asm code.
+
+	Attributes:
+		LINE_OBJ -- line object you want to throw an exception for
+		REASON -- reason for exception being thrown
+	"""
+
+	def __init__(self, LINE_OBJ=None, REASON=""):
+		if LINE_OBJ == None:
+			super().__init__(line_num=-1, msg=str(REASON), file=None, line_ind=-1)
+		else:
+			super().__init__(line_num=LINE_OBJ.get_line_num(), msg=str(LINE_OBJ.get_raw()) + "\n\n" + str(REASON), file=LINE_OBJ.get_file_name(), line_ind=-1)
 
 
 	

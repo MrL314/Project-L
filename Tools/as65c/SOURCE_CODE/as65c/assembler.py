@@ -20,7 +20,7 @@ import threading
 # local imports
 import LineObject
 import util
-from exceptions import LineException
+from exceptions import LineException, LineError
 
 
 
@@ -146,75 +146,7 @@ def get_formats(op):
 	return util.get_formats(op.upper())
 
 
-'''
-#TODO: Revert if change doesn't work
-def parse_format(i_form):
-	
-	out_form = []
 
-	FORM = i_form.split(" ")
-
-	for el in FORM:
-		out_parsed = {"type": None, "valtype": None, "register": None}
-
-		if el.lower() == "(":
-			out_parsed["type"] = util.DATA_TYPES.INDIRECT_START
-
-		elif el.lower() == ")":
-			out_parsed["type"] = util.DATA_TYPES.INDIRECT_END
-
-		elif el.lower() == "[":
-			out_parsed["type"] = util.DATA_TYPES.INDIRECT_LONG_START
-		
-		elif el.lower() == "]":
-			out_parsed["type"] = util.DATA_TYPES.INDIRECT_LONG_END
-		
-		elif el.lower() == ",":
-			out_parsed["type"] = util.DATA_TYPES.SEPARATOR
-		
-		elif el.lower() == "dp":
-			out_parsed["type"] = util.DATA_TYPES.TYPE
-			out_parsed["valtype"] = "dp"
-
-		elif el.lower() == "sr":
-			out_parsed["type"] = util.DATA_TYPES.TYPE
-			out_parsed["valtype"] = "sr"
-		
-		elif el.lower() == "addr":
-			out_parsed["type"] = util.DATA_TYPES.TYPE
-			out_parsed["valtype"] = "addr"
-		
-		elif el.lower() == "long":
-			out_parsed["type"] = util.DATA_TYPES.TYPE
-			out_parsed["valtype"] = "long"
-		
-		elif el.lower() == "#const":
-			out_parsed["type"] = util.DATA_TYPES.TYPE
-			out_parsed["valtype"] = "const"
-		
-		elif el.lower() == "x":
-			out_parsed["type"] = util.DATA_TYPES.REGISTER
-			out_parsed["register"] = "x"
-
-		elif el.lower() == "y":
-			out_parsed["type"] = util.DATA_TYPES.REGISTER
-			out_parsed["register"] = "y"
-
-		elif el.lower() == "a":
-			out_parsed["type"] = util.DATA_TYPES.REGISTER
-			out_parsed["register"] = "a"
-
-		elif el.lower() == "s":
-			out_parsed["type"] = util.DATA_TYPES.REGISTER
-			out_parsed["register"] = "s"
-
-		else:
-			raise Exception("invalid parse token in " + " ".join(i_form))
-
-		out_form.append(out_parsed)
-
-	return out_form
-'''
 
 
 
@@ -242,112 +174,7 @@ def parse_format(LINE):
 	
 
 
-'''
-# TODO: Revert if new parsing doesn't work
-def parse_instruction(LINE, FORMATS, instruction, LINE_OBJ, attempt_dp = False):
-	global data_page
 
-	opcode = -1
-
-
-	FORMS = [(parse_format(F[0]), F[1]) for F in FORMATS]
-
-	good_formats = []
-
-	LINE = LINE[1:]
-
-
-	if attempt_dp:
-		for L in range(len(LINE)):
-			if LINE[L]["type"] == util.DATA_TYPES.TYPE:
-				if LINE[L]["valtype"] == "addr":
-					if LINE[L]["size"] == 2:
-						try:
-							if LINE[L]["value"]["value"] - data_page < 0x100:
-								LINE[L]["size"] = 1
-								LINE[L]["value"]["size"] = 1
-								LINE[L]["value"]["value"] = LINE[L]["value"]["value"] - data_page
-								LINE[L]["valtype"] = "dp"
-						except:
-							pass
-							
-						
-
-
-
-
-	for F in FORMS:
-
-		form = F[0]
-
-		if len(form) > len(LINE):
-			# skip format if longer than line
-			continue
-
-
-		for L in range(len(LINE)+1): # one longer to account for break if condition good (cleaner code) 
-
-			if L >= len(form):
-				good_formats.append(F)
-				break
-
-			el = LINE[L]
-
-			f = form[L]
-
-			if el["type"] == f["type"]:
-				if f["type"] == util.DATA_TYPES.INDIRECT_START:
-					pass
-				elif f["type"] == util.DATA_TYPES.INDIRECT_END:
-					pass
-				elif f["type"] == util.DATA_TYPES.INDIRECT_LONG_START:
-					pass
-				elif f["type"] == util.DATA_TYPES.INDIRECT_LONG_END:
-					pass
-				elif f["type"] == util.DATA_TYPES.SEPARATOR:
-					pass
-				elif f["type"] == util.DATA_TYPES.TYPE:
-
-					if el["valtype"] == f["valtype"]:
-						pass
-					elif el["valtype"] in ("bank", "offset", "high", "low", "const"):
-
-						if f["valtype"] != "const":
-							break
-					else:
-						break
-
-				elif f["type"] == util.DATA_TYPES.REGISTER:
-					if el["register"] != f["register"]:
-						break
-
-				else:
-					break
-			else:
-				break
-
-
-
-	longest = -1
-
-
-	for f, op in good_formats:
-		if len(f) > longest:
-			longest = len(f)
-			opcode = op
-
-	possible_formats = [(instruction + " " + "".join(f[0].split(" "))) for f in FORMATS]
-
-	if opcode == -1 and not attempt_dp:
-		opcode = parse_instruction(LINE, FORMATS, instruction, LINE_OBJ, attempt_dp = True)
-
-	if opcode == -1:
-		#raise LineException(LINE_OBJ.get_line_num(), "Cannot encode instruction " + instruction + ". Improper format. " + str(LINE_OBJ.get_raw()) + "\n" + str(LINE_OBJ.get_parsed()) + "\nProper formats include: " + "\n\t".join(possible_formats)), LINE_OBJ.get_file_name())
-		raise LineException(LINE_OBJ.get_line_num(), "Cannot encode instruction " + instruction + ". Improper format. \n\t" + str(LINE_OBJ.get_raw()) + "\nProper formats include:\n\t" + "\n\t".join(possible_formats) + "\n" + str(LINE_OBJ.get_parsed()), LINE_OBJ.get_file_name())
-
-
-	return opcode
-'''
 
 def parse_instruction(LINE, instruction, LINE_OBJ, attempt_dp=False):
 	global data_page
@@ -374,8 +201,8 @@ def parse_instruction(LINE, instruction, LINE_OBJ, attempt_dp=False):
 	try:
 		L_FORM = parse_format(LINE[1:])
 	except:
-		raise LineException(LINE_OBJ.get_line_num(), "Cannot encode instruction " + instruction + ". Improper format. \n\t" + str(LINE_OBJ.get_raw()) + "\n" + str(LINE), LINE_OBJ.get_file_name())
-
+		#raise LineError(LINE_OBJ, "Cannot encode instruction " + instruction + ". Improper format.\n" + str(LINE))
+		raise LineError(LINE_OBJ, "Cannot encode instruction " + instruction + ". Improper format.")
 
 	FORMATS = get_formats(instruction.upper())
 
@@ -391,8 +218,9 @@ def parse_instruction(LINE, instruction, LINE_OBJ, attempt_dp=False):
 
 
 	if opcode == -1:
-		possible_formats = [(instruction + " " + str(f)) for f in FORMATS]
-		raise LineException(LINE_OBJ.get_line_num(), "Cannot encode instruction " + instruction + ". Improper format. \n\t" + str(LINE_OBJ.get_raw()) + "\nProper formats include:\n\t" + "\n\t".join(possible_formats), LINE_OBJ.get_file_name())
+		possible_formats = [(instruction + " " + ''.join(str(f).split(" "))) for f in FORMATS]
+		#raise LineException(LINE_OBJ.get_line_num(), "Cannot encode instruction " + instruction + ". Improper format. \n\t" + str(LINE_OBJ.get_raw()) + "\nProper formats include:\n\t" + "\n\t".join(possible_formats), LINE_OBJ.get_file_name())
+		raise LineError(LINE_OBJ, "Cannot encode instruction " + instruction + ". Improper format. Proper formats include:\n\t" + "\n\t".join(possible_formats))
 
 
 	return opcode
@@ -554,6 +382,8 @@ class ASM_FILE(object):
 
 		#defined_vars = {}
 		NUM_LINES = len(ASM_LINES)
+
+		in_macro = False
 		'''
 		LINE_OBJECTS = [None for _ in range(NUM_LINES)]
 
@@ -589,6 +419,9 @@ class ASM_FILE(object):
 		IF_CONDS = [True]
 
 		for line in ASM_LINES:
+
+
+			
 
 			L_OBJ = LineObject.Line(line, file=filename, line_number=line_number, include_level=include_level)
 
@@ -630,7 +463,8 @@ class ASM_FILE(object):
 								if s in self._ext_vars:
 									cond_str += str(self._ext_vars[s])
 								else:
-									raise LineException(L_OBJ.get_line_num(), str(s) + " not found in assembler variables.\n" + L_OBJ.get_raw(), L_OBJ.get_file_name())
+									#raise LineException(L_OBJ.get_line_num(), str(s) + " not found in assembler variables.\n" + L_OBJ.get_raw(), L_OBJ.get_file_name())
+									raise LineError(L_OBJ, str(s) + " not found in assembler variables.")
 
 
 					if_cond = util.evaluateExpression(cond_str)
@@ -646,7 +480,9 @@ class ASM_FILE(object):
 					IF_LAYER -= 1
 
 				elif LINE[0]["type"] == util.DATA_TYPES.CONDITIONAL_ELSE:
-					if IF_LAYER == 0: raise LineException(L_OBJ.get_line_num(), "Cannot parse ELSE without IF statement.\n" + L_OBJ.get_raw(), L_OBJ.get_file_name())
+					if IF_LAYER == 0: 
+						#raise LineException(L_OBJ.get_line_num(), "Cannot parse ELSE without IF statement.\n" + L_OBJ.get_raw(), L_OBJ.get_file_name())
+						raise LineError(L_OBJ, "Cannot parse ELSE without IF statement.")
 
 					if_condition = not IF_CONDS.pop()
 					IF_CONDS.append(if_condition)
@@ -658,6 +494,9 @@ class ASM_FILE(object):
 
 
 						if L_OBJ.is_include_line():
+							if in_macro:
+								raise LineError(L_OBJ, "'INCLUDE' statement inside macro is not yet currently supported.")
+
 							for chunk in LINE:
 
 								if chunk["type"] == util.DATA_TYPES.INCLUDE:
@@ -682,6 +521,13 @@ class ASM_FILE(object):
 											self.MAKE_ASM_LINES(path + file, include_level=include_level+1)
 
 											break
+
+
+						elif L_OBJ.get_is_macro_def():
+							in_macro = True
+
+						elif L_OBJ.get_is_macro_end():
+							in_macro = False
 
 
 
@@ -725,12 +571,16 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 
 	ASM_START = util.get_time()
 
+	TIMING_DEBUG = False
+
+	if print_verbose:
+		TIMING_DEBUG = True
+
 	try:
 
-		TIMING_DEBUG = False
+		start = util.get_time()
 
-		if print_verbose:
-			TIMING_DEBUG = True
+		
 
 		#get_symbols(SYMBOLS_FILE)
 
@@ -743,18 +593,19 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 		hash_text = ""
 		curr_hash = None
 
-		start = util.get_time()
+		
 
 		file_updated, curr_hash = HASH_CHECK(filename)
 
 		if (not force_assemble) and file_updated: force_assemble = True
 
-		try:
-			f = open(FILE_PATH + FILE_NAME.split(".")[0] + ".rel")
+		if not force_assemble:
+			try:
+				f = open(FILE_PATH + FILE_NAME.split(".")[0] + ".rel")
 
-			f.close()
-		except:
-			force_assemble = True
+				f.close()
+			except:
+				force_assemble = True
 
 		#if TIMING_DEBUG: print("\n  hash load time: ", format(util.get_time()-start, " 10.5f"))
 
@@ -792,45 +643,6 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 		LINES = ASM_LINES_OBJ.MAKE_ASM_LINES(filename)
 
 		INCLUDED_FILES = ASM_LINES_OBJ.GET_INCLUDED_FILES()
-
-		'''
-		######################## RELACE LATER ######################## 
-		for line in ASM_LINES:
-			#hash_text += line
-			#hash_lines.append(line)
-			if not ended:
-				LOBJ = LineObject.Line(line, file=filename, line_number=lnum, include_level=0)
-				
-
-				# change the order of these around later if intuition is correct
-				#if LOBJ.get_uses_near_var():
-				#	LO = LineObject.Line("_NEAR_VAR" + str(NV_IND), file=filename, line_number=lnum, include_level=0)
-				#	LO.set_hide_lis()
-				#	LINES.append(LO)
-				#	NV_IND += 1
-
-				LINES.append(LOBJ)
-
-
-				if LOBJ.get_is_end(): ended = True
-			else:
-				break
-
-
-			lnum += 1
-			#if (lnum+1) % 1000 == 0:
-			#	if TIMING_DEBUG: print("  init --- time: ", format(util.get_time()-start2, " 10.5f"))
-			#	start2 = util.get_time()
-
-		
-
-		if TIMING_DEBUG: print("  init time: ", format(util.get_time()-start, " 10.5f"))
-
-		FILE_NUM += 1
-
-		#hash_text = "".join(hash_lines)
-
-		'''
 		
 
 
@@ -846,239 +658,16 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 		globalvars = [""]
 		externalvars = [""]
 
-		# add external symbols to local variable pool
-		#
-		#for var in EXTERNAL_SYMBOLS:
-		#	vartype, varval = EXTERNAL_SYMBOLS[var]
-		#
-		#	localvars.append({"name": var, "type": vartype, "value": varval, "is_temp": True, "is_external": True, "section": None, "offset": varval})
-		
-
-		"""
-		######################## REPLACE LATER ########################
-		start = util.get_time()
-		# step 0: handle IF statements
-
-
-
-		if_condition = True
-		IF_LAYER = 0
-
-		defined_vars = {}
-
-		temp_lines = LINES
-
-		LINES = []
-
-		for l in temp_lines:
-			LINE = l.get_parsed()
-
-			if LINE != []:
-
-				'''
-				if LINE[0]["type"] == util.DATA_TYPES.EQU:
-					if IF_LAYER == 0 or if_condition:
-						if len(LINE) > 1:
-							if LINE[1]["type"] == util.DATA_TYPES.VALUE:
-								if LINE[0]["varname"] in defined_vars:
-									raise LineException(l.get_line_num(), "Multiple definitions of '" + LINE[0]["varname"] + "'.\n" + l.get_raw(), l.get_file_name())
-								defined_vars[LINE[0]["varname"]] = LINE[1]["value"]
-
-						else:
-							raise LineException(l.get_line_num(), "No value set for '" + LINE[0]["varname"] + "'.\n" + l.get_raw(), l.get_file_name())
-				'''
-
-				if LINE[0]["type"] == util.DATA_TYPES.CONDITIONAL_IF:
-					condition = LINE[0]["condition"]
-
-					try:
-						if_condition = int(condition)
-					except:
-
-						if condition in ext_vars:
-							if_condition = ext_vars[condition]
-						elif condition in defined_vars:
-							if_condition = defined_vars[condition]
-						else:
-							#if_condition = False
-							raise LineException(l.get_line_num(), str(condition) + " not found.\n" + l.get_raw(), l.get_file_name())
-
-					if if_condition == 1: if_condition = True
-					if if_condition == 0: if_condition = False
-
-					#print("Condition: ", str(condition), " value: ", str(if_condition))
-					
-					IF_LAYER += 1
-
-				elif LINE[0]["type"] == util.DATA_TYPES.CONDITIONAL_ENDIF:
-					IF_LAYER -= 1
-
-				else:
-					if IF_LAYER == 0 or if_condition:
-						LINES.append(l)
-
-		#if TIMING_DEBUG: print("  IFs time: ", format(util.get_time()-start, " 10.5f"))
-		"""
-
-
-		"""
-		######################## RELACE LATER ########################
-		start = util.get_time()
-		# step 1: include files
-
-
-
-		'''
-		while True:
-			lnum = len(LINES)-1
-			while lnum >= 0:
-				LINE_OBJ = LINES[lnum]
-
-				LINE = LINE_OBJ.get_parsed()
-
-				break_out = False
-				
-				cind = 0
-				while cind < len(LINE):
-					chunk = LINE[cind]
-
-					# if the current chunk is an include
-					if chunk["type"] == util.DATA_TYPES.INCLUDE:
-						if not LINE_OBJ.already_included():
-							# if not already undergone the include process
-
-							file = chunk["filename"]  # include file
-							path = LINE_OBJ.get_file_path() # file path relative to source file
-
-
-							#extension = file.split(".")[-1] # file extension
-
-
-
-							file_lines = read_file(path + file)  # code file
-
-							ind = 0
-							NEW_LINES = []
-							for line in file_lines:
-								new_line = LineObject.Line(line, file=path+file, line_number=ind+1, include_level=LINE_OBJ.get_include_level() + 1)
-								LINES.insert(lnum + ind + 1, new_line)  # insert included file lines
-								ind += 1
-
-							LINES = LINES[:lnum] + NEW_LINES + LINES[lnum:]
-
-
-
-
-							#LINES.pop(lnum)
-							LINE_OBJ.set_already_included() # so include doesnt happen again
-
-							break_out = True
-							break
-
-					cind += 1
-
-				if break_out: # to roll back to top of file when include statement finished (in case of nested includes)
-					break
-
-				lnum -= 1
-
-			if lnum < 0:
-				break
-
-		'''
-
-		
-
-		CURR_LABEL = "#COMN"
-		lnum = 0
-
-		INC_LINES = []
-
-
-		
-		while lnum < len(LINES):
-			LINE_OBJ = LINES[lnum]
-
-			INC_LINES.append(LINE_OBJ)
-
-
-
-			LINE = LINE_OBJ.get_parsed()
-
-			
-
-			
-			cind = 0
-			while cind < len(LINE):
-				chunk = LINE[cind]
-
-				# if the current chunk is an include
-				if chunk["type"] == util.DATA_TYPES.INCLUDE:
-					if not LINE_OBJ.already_included():
-						# if not already undergone the include process
-
-						file = chunk["filename"]  # include file
-						path = LINE_OBJ.get_file_path() # file path relative to source file
-
-						real_path = os.path.abspath(path + file)
-
-						if not (real_path in INCLUDED_FILES):
-							#extension = file.split(".")[-1] # file extension
-
-
-							file_lines = read_file(path + file)  # code file
-
-							ind = 0
-							NEW_LINES = []
-							for line in file_lines:
-								new_line = LineObject.Line(line, file=path+file, line_number=ind+1, include_level=LINE_OBJ.get_include_level() + 1)
-								
-								
-								NEW_LINES.append(new_line)
-								if new_line.get_is_end(): break
-								ind += 1
-
-							LINES = LINES[:lnum+1] + NEW_LINES + LINES[lnum+1:]
-
-
-
-
-						#LINES.pop(lnum)
-						LINE_OBJ.set_already_included() # so include doesnt happen again
-						LINES[lnum] = LINE_OBJ
-
-						#break_out = True
-
-						FILE_NUM += 1
-						break
-
-
-				
-
-				else:
-					#if chunk["type"] == util.DATA_TYPES.LABEL: print("NOT A SUB LABEL: " + str(chunk["label"]))
-					#elif chunk["type"] == util.DATA_TYPES.VARIABLE: print("NOT A SUB VARIABLE: " + str(chunk["varname"]))
-					pass
-
-				cind += 1
-
-			lnum += 1
-
-		
-
-
-		'''
-		L_IND = 0
-		TOTAL_LINES = 0
-		while lnum < len(INC_LINES):
-
-
-			if  len()
-		'''
-
-		"""
 		if TIMING_DEBUG: print("  include time: ", format(util.get_time()-start, " 10.5f"))
 
+
+
+
+
+
+
+
+		
 		total_clean = 0
 		total_parse = 0
 		#total_lines = 0
@@ -1112,6 +701,7 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 		#macro_locals_by_length = []
 		curr_macro_locals = []
 		NUM_LINES = len(LINES)
+		curr_macro_start_line = 0
 		while line_ind < NUM_LINES:
 			LINE_OBJ = LINES[line_ind]
 
@@ -1126,6 +716,11 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 
 			if in_macro:
 				# parse macro line
+
+
+				if LINES[line_ind].get_is_macro_def():
+					raise LineError(LINE_OBJ, "Cannot nest macro defines. Perhaps you forgot to end the previous macro: '" + str(curr_macro_name) + "'?")
+
 				LINES[line_ind].is_macro(True)
 
 				raw_line = LINE_OBJ.get_raw()
@@ -1175,8 +770,8 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 					curr_macro_name = LINE[cind]["varname"]
 
 					if curr_macro_name in macros:
-						raise LineException(LINE_OBJ.get_line_num(), "Redefinition of macro '" + str(curr_macro_name) + "'.\n" + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
-
+						#raise LineException(LINE_OBJ.get_line_num(), "Redefinition of macro '" + str(curr_macro_name) + "'.\n" + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+						raise LineError(LINE_OBJ, "Redefinition of macro '" + str(curr_macro_name) + "'.")
 					vind = 1
 					while cind + vind < LINE_LEN:
 						chunk = LINE[cind + vind]
@@ -1291,7 +886,8 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 						if len(variable_vals) != len(MACRO["macro_vars"]):
 							#print(LINE_OBJ.get_parsed())
 							#print("variable vals:", variable_vals)
-							raise LineException(LINE_OBJ.get_line_num(), "Incorrect number of arguments for macro \'" + LINE[cind]["varname"] + "\'.\n\tRequired " + str(len(MACRO["macro_vars"])) + ", Given: " + str(len(variable_vals)) + ".\n" + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+							#raise LineException(LINE_OBJ.get_line_num(), "Incorrect number of arguments for macro \'" + LINE[cind]["varname"] + "\'.\n\tRequired " + str(len(MACRO["macro_vars"])) + ", Given: " + str(len(variable_vals)) + ".\n" + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+							raise LineError(LINE_OBJ, "Incorrect number of arguments for macro \'" + LINE[cind]["varname"] + "\'.\n\tRequired " + str(len(MACRO["macro_vars"])) + ", Given: " + str(len(variable_vals)) + ".")
 
 
 
@@ -1624,7 +1220,8 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 								expression_data = expression_data[2:] # skip over addition symbol 
 							else:
 								#raise LineException(LINE_OBJ.get_line_num(), "External label offsets can only be expressed as positive offsets from that label.\n" + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
-								raise LineException(LINE_OBJ.get_line_num(), "Error parsing external label with offset.\n" + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+								#raise LineException(LINE_OBJ.get_line_num(), "Error parsing external label with offset.\n" + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+								raise LineError(LINE_OBJ, "Error parsing external label with offset.")
 					
 
 
@@ -1646,7 +1243,8 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 								#external variable used in an expression, not at the begining. I will *NOT* allow this
 								#raise LineException(LINE_OBJ.get_line_num(), "External labels with offset MUST be used at front of calculation.\n" + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
 								if ind != 0:
-									raise LineException(LINE_OBJ.get_line_num(), "External labels with offset MUST be used at front of calculation.\n" + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+									#raise LineException(LINE_OBJ.get_line_num(), "External labels with offset MUST be used at front of calculation.\n" + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+									raise LineError(LINE_OBJ, "External labels with offset MUST be used at front of calculation.")
 									#print("[WARNING] External labels with offset should be used at front of calculation. At line", LINE_OBJ.get_line_num(), "\n", LINE_OBJ.get_raw())
 
 
@@ -1931,7 +1529,8 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 							except:
 								pass
 					else:
-						raise LineException(LINE_OBJ.get_line_num(), "Unexpected end of EQU, " + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+						#raise LineException(LINE_OBJ.get_line_num(), "Unexpected end of EQU, " + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+						raise LineError(LINE_OBJ, "Unexpected end of EQU.")
 
 
 
@@ -1969,10 +1568,12 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 							cind -= 1
 
 						else:
-							raise LineException(LINE_OBJ.get_line_num(), "Storage directive size must be a constant integer." + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+							#raise LineException(LINE_OBJ.get_line_num(), "Storage directive size must be a constant integer." + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+							raise LineError(LINE_OBJ, "Storage directive size must be a constant integer.")
 
 					else:
-						raise LineException(LINE_OBJ.get_line_num(), "Size of storage directive not specified: " + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+						#raise LineException(LINE_OBJ.get_line_num(), "Size of storage directive not specified: " + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+						raise LineError(LINE_OBJ, "Size of storage directive not specified.")
 
 				elif chunk["type"] == util.DATA_TYPES.OPCODE:
 
@@ -2123,7 +1724,9 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 							while x_ind < LINE_LEN:
 								tp = LINE[x_ind]["type"]
 								if was_sep:
-									if tp == util.DATA_TYPES.SEPARATOR: raise LineException(LINE_OBJ.get_line_num(), "Improper format for data table.\n" + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+									if tp == util.DATA_TYPES.SEPARATOR: 
+										#raise LineException(LINE_OBJ.get_line_num(), "Improper format for data table.\n" + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+										raise LineError(LINE_OBJ, "Improper format for data table.")
 
 									elif tp in {util.DATA_TYPES.VALUE, util.DATA_TYPES.EXPRESSION, util.DATA_TYPES.VARIABLE}:
 										was_sep = False
@@ -2131,17 +1734,20 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 										if "is_external_label" in LINE[x_ind] and LINE[x_ind]["is_external_label"]:
 											x_ind += 1
 											if LINE[x_ind]["type"] == util.DATA_TYPES.SEPARATOR:
-												raise LineException(LINE_OBJ.get_line_num(), "External offset malfunction in data table.\n" + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+												#raise LineException(LINE_OBJ.get_line_num(), "External offset malfunction in data table.\n" + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+												raise LineError(LINE_OBJ, "External offset malfunction in data table.")
 
 									elif tp == util.DATA_TYPES.TYPE:
 										was_sep = False
 										was_type = True
 										if not LINE[x_ind+1]["type"] in {util.DATA_TYPES.VALUE, util.DATA_TYPES.EXPRESSION, util.DATA_TYPES.VARIABLE}:
-											raise LineException(LINE_OBJ.get_line_num(), "Improper format for data table.\n" + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+											#raise LineException(LINE_OBJ.get_line_num(), "Improper format for data table.\n" + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+											raise LineError(LINE_OBJ, "Improper format for data table.")
 										x_ind -= 1
 											
 									else:
-										raise LineException(LINE_OBJ.get_line_num(), "Improper format for data table.\n" + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())										
+										#raise LineException(LINE_OBJ.get_line_num(), "Improper format for data table.\n" + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+										raise LineError(LINE_OBJ, "Improper format for data table.")
 								
 								elif was_type:
 									was_sep = True
@@ -2176,7 +1782,8 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 										LINE[cind]["size"] = 3
 
 								elif not (LINE[cind]["type"] in {util.DATA_TYPES.SEPARATOR, util.DATA_TYPES.TYPE}):
-									raise LineException(LINE_OBJ.get_line_num(), "invalid data in data table", LINE_OBJ.get_file_name())
+									#raise LineException(LINE_OBJ.get_line_num(), "invalid data in data table", LINE_OBJ.get_file_name())
+									raise LineError(LINE_OBJ, "Invalid data in data table.")
 
 							break
 
@@ -2354,7 +1961,8 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 									sec_len += 2
 
 								else:
-									raise LineException(LINE_OBJ.get_line_num(), "Error with offset counting..." + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+									#raise LineException(LINE_OBJ.get_line_num(), "Error with offset counting..." + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+									raise LineError(LINE_OBJ, "Error with offset counting...")
 							else:
 								if LINE[cind]["type"] == util.DATA_TYPES.TYPE:
 									if LINE[cind]["valtype"] == "bank":
@@ -2489,7 +2097,7 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 		for vind in range(1, len(localvars)):
 			v_name = localvars[vind]["name"]
 			if v_name in var_dict:
-				raise LineException(LINE_OBJ.get_line_num(), "Multiple instances of variable \"" + str(v_name) + "\"", LINE_OBJ.get_file_name())
+				raise LineException(-1, "Multiple instances of variable \"" + str(v_name) + "\"")
 			var_dict[v_name] = vind
 
 			var = localvars[vind]
@@ -2911,7 +2519,8 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 									
 
 									if not fnd:
-										raise LineException(LINE_OBJ.get_line_num(), "Could not find variable \"" + str(chunk["varname"]) + "\"", LINE_OBJ.get_file_name())
+										#raise LineException(LINE_OBJ.get_line_num(), "Could not find variable \"" + str(chunk["varname"]) + "\"", LINE_OBJ.get_file_name())
+										raise LineError(LINE_OBJ, "Could not find variable \"" + str(chunk["varname"]) + "\"")
 
 									LINE[ind] = {"type": util.DATA_TYPES.EXTERNAL, "varname": chunk["varname"], "label": chunk["varname"]}
 
@@ -2993,7 +2602,8 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 
 									if chunk["vartype"] != util.DATA_TYPES.NORMALVAR:
 										if not (chunk["varname"] in var_dict):
-											raise LineException(LINE_OBJ.get_line_num(), "No label \"" + str(chunk["varname"]) + "\" found to branch to.  " + str(format(LINE_OBJ.get_offset(), "04x")), LINE_OBJ.get_file_name())
+											#raise LineException(LINE_OBJ.get_line_num(), "No label \"" + str(chunk["varname"]) + "\" found to branch to.  " + str(format(LINE_OBJ.get_offset(), "04x")), LINE_OBJ.get_file_name())
+											raise LineError(LINE_OBJ, "No label \"" + str(chunk["varname"]) + "\" found to branch to.  (offset: " + str(format(LINE_OBJ.get_offset(), "04x")) + ")")
 
 
 									var = localvars[var_dict[chunk["varname"]]]
@@ -3017,7 +2627,8 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 										dist = OFFS - (LINE_OBJ.get_offset() + 2)
 
 										if dist < -0x80 or dist > 0x7f:
-											raise LineException(LINE_OBJ.get_line_num(), "Label not near enough to branch from this instruction. LABEL = " + str(chunk["varname"]) + "\n" + str(LINE_OBJ.get_raw()) + "\n" + "Cannot branch distance of " + format(dist, "04x") + "h. Must be between [-80h, 7Fh].", LINE_OBJ.get_file_name())
+											#raise LineException(LINE_OBJ.get_line_num(), "Label not near enough to branch from this instruction. LABEL = " + str(chunk["varname"]) + "\n" + str(LINE_OBJ.get_raw()) + "\n" + "Cannot branch distance of " + format(dist, "04x") + "h. Must be between [-80h, 7Fh].", LINE_OBJ.get_file_name())
+											raise LineError(LINE_OBJ, "Label not near enough to branch from this instruction. LABEL = " + str(chunk["varname"]) + "\n" + "Cannot branch distance of " + format(dist, "04x") + "h. Must be between [-80h, 7Fh].")
 										
 
 										LINE[ind] = {"type": util.DATA_TYPES.VALUE, "value": dist, "size": 1}
@@ -3036,7 +2647,8 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 										dist = OFFS - (LINE_OBJ.get_offset() + 3)
 										
 										if dist < -0x8000 or dist > 0x7fff:
-											raise LineException(LINE_OBJ.get_line_num(), "Label not near enough to branch from this instruction. LABEL = " + str(chunk["varname"]) + "\n" + str(LINE_OBJ.get_raw()) + "\n" + "Cannot branch distance of " + format(dist, "04x") + "h. Must be between [-8000h, 7FFFh].", LINE_OBJ.get_file_name())
+											#raise LineException(LINE_OBJ.get_line_num(), "Label not near enough to branch from this instruction. LABEL = " + str(chunk["varname"]) + "\n" + str(LINE_OBJ.get_raw()) + "\n" + "Cannot branch distance of " + format(dist, "04x") + "h. Must be between [-8000h, 7FFFh].", LINE_OBJ.get_file_name())
+											raise LineError(LINE_OBJ, "Label not near enough to branch from this instruction. LABEL = " + str(chunk["varname"]) + "\n" + "Cannot branch distance of " + format(dist, "04x") + "h. Must be between [-8000h, 7FFFh].")
 
 										LINE[ind] = {"type": util.DATA_TYPES.VALUE, "value": dist, "size": 2}
 
@@ -3057,7 +2669,8 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 
 									debug_files = ("")
 
-									raise LineException(LINE_OBJ.get_line_num(), "THIS WAS UNDERSTOOD WRONG. FIX THIS!!! ('NEAR VAR' ISSUE)\n" + str(LINE_OBJ.get_raw()), LINE_OBJ.get_file_name())
+									#raise LineException(LINE_OBJ.get_line_num(), "THIS WAS UNDERSTOOD WRONG. FIX THIS!!! ('NEAR VAR' ISSUE)\n" + str(LINE_OBJ.get_raw()), LINE_OBJ.get_file_name())
+									raise LineError(LINE_OBJ, "UNSPECIFIED 'NEAR VAR' ISSUE (error code n001)")
 									
 
 
@@ -3123,7 +2736,8 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 
 								else:
 
-									raise LineException(LINE_OBJ.get_line_num(), "Error parsing external label offset...:\n" + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+									#raise LineException(LINE_OBJ.get_line_num(), "Error parsing external label offset...:\n" + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+									raise LineError(LINE_OBJ, "Error parsing external label offset...")
 
 
 
@@ -3255,7 +2869,8 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 
 						if LINE[ind]["type"] == util.DATA_TYPES.TYPE:
 							if ind+1 >= LINE_LEN:
-								LineException(LINE_OBJ.get_line_num(), "Improper format for type: \n" + str(LINE_OBJ.get_raw()) + "\n", LINE_OBJ.get_file_name())
+								#raise LineException(LINE_OBJ.get_line_num(), "Improper format for type: \n" + str(LINE_OBJ.get_raw()) + "\n", LINE_OBJ.get_file_name())
+								raise LineError(LINE_OBJ, "Improper format for type.")
 
 
 							if LINE[ind]["valtype"] == "dp": 
@@ -3397,7 +3012,8 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 				except LineException:
 					raise
 				except Exception as e:
-					raise LineException(LINE_OBJ.get_line_num(), "Error parsing line: \n" + str(e) + "\n" + str(LINE_OBJ.get_raw()), LINE_OBJ.get_file_name())
+					#raise LineException(LINE_OBJ.get_line_num(), "Error parsing line: \n" + str(e) + "\n" + str(LINE_OBJ.get_raw()), LINE_OBJ.get_file_name())
+					raise LineError(LINE_OBJ, "Error parsing line: \n\n" + str(e))
 
 
 
@@ -4449,7 +4065,8 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 								'''
 
 								if not v in var_dict:
-									raise LineException(LINE_OBJ.get_line_num(), "Error converting variable: " + str(chunk), LINE_OBJ.get_file_name())
+									#raise LineException(LINE_OBJ.get_line_num(), "Error converting variable: " + str(chunk), LINE_OBJ.get_file_name())
+									raise LineError(LINE_OBJ, "Error converting variable: " + str(chunk))
 
 
 								if not localvars[var_dict[v]]["is_near"]:
@@ -4461,7 +4078,8 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 								try:
 									section = VAR["section"]
 								except:
-									raise LineException(LINE_OBJ.get_line_num(), "Error getting variable section: " + str(chunk) + "\n" + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+									#raise LineException(LINE_OBJ.get_line_num(), "Error getting variable section: " + str(chunk) + "\n" + LINE_OBJ.get_raw(), LINE_OBJ.get_file_name())
+									raise LineError(LINE_OBJ, "Error getting variable section: " + str(chunk))
 
 								s_ind = sections_to_indexes[section]
 
@@ -4505,7 +4123,8 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 								'''
 								
 								if not (v in GLOBALVARS_DICT):
-									raise LineException(LINE_OBJ.get_line_num(), "Error converting variable: " + str(chunk), LINE_OBJ.get_file_name())
+									#raise LineException(LINE_OBJ.get_line_num(), "Error converting variable: " + str(chunk), LINE_OBJ.get_file_name())
+									raise LineError(LINE_OBJ, "Error converting variable: " + str(chunk))
 
 								INDEX = GLOBALVARS_DICT[v]
 
@@ -4624,7 +4243,8 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 									idx += 9
 
 								else:
-									raise LineException(LINE_OBJ.get_line_num(), "Error converting to rel line: \n" + LINE_OBJ.get_raw() + "\n@ offset " + format(TEST_OFFS, "04x") + "\n", LINE_OBJ.get_file_name())
+									#raise LineException(LINE_OBJ.get_line_num(), "Error converting to rel line: \n" + LINE_OBJ.get_raw() + "\n@ offset " + format(TEST_OFFS, "04x") + "\n", LINE_OBJ.get_file_name())
+									raise LineError(LINE_OBJ, "Error converting to rel line @ offset " + format(TEST_OFFS, "04x"))
 
 
 
@@ -5318,88 +4938,5 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 		print(" after " + format(util.get_time()-ASM_START, " 10.5f").lstrip() + "s.")
 		#print(curr_hash.hexdigest())
 		#print(curr_hash)
-
-
-
-
-
-	'''
-	except LineException as e:
-
-		print("Error during assembly of " + FILE_NAME)
-
-		traceback.print_exc()
-	'''
-
-
-
-
-
-
-
-
-				
-
-
-
-
-
-'''
-if __name__ == "__main__":
-
-
-	parser = argparse.ArgumentParser(description="Assemble a .asm file into a .rel file")
-
-	parser.add_argument("file", metavar="file", type=str, help="Name of file to assemble")
-
-	parser.add_argument("--force_assemble", action="store_true", help="Force file to be assembled")
-
-	parser.add_argument("--options", dest="asm_args", nargs="+", action="append", default=[], help="Optional arguments for assembler")
-
-
-
-	ARGS = vars(parser.parse_args())
-
-	ASM_ARGS = []
-
-	if len(ARGS["asm_args"]) > 0:
-		ASM_ARGS = ARGS["asm_args"][0]
-
-	optional_args = {}
-	i = 0
-	while i < len(ASM_ARGS):
-
-		if i+1 < len(ASM_ARGS):
-			optional_args[ASM_ARGS[i]] = int(ASM_ARGS[i+1])
-		
-		i += 2
-
-	if i == len(ASM_ARGS) + 1:
-		raise Exception("Invalid args " + str(ASM_ARGS))
-
-	force_assemble = False
-
-	if ARGS.force_assemble:
-		force_assemble = True
-
-
-	FILE = ARGS["file"]
-	if FILE[-4:].lower() == ".rel":
-		FILE = FILE[:-4] + ".asm"
-
-
-	assembleFile(FILE, optional_args, force_assemble=force_assemble)
-'''
-
-
-
-
-#assembleFile("Pause.asm", {"ENG_VER": 1})
-
-#assembleFile("sfxdos.asm", {})
-
-#assembleFile("kart-init.asm")
-
-
 
 

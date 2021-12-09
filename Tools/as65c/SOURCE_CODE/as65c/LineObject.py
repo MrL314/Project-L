@@ -12,7 +12,7 @@ import threading
 
 # local imports
 import util
-from exceptions import LineException
+from exceptions import LineException, LineError
 
 
 
@@ -40,6 +40,8 @@ class Line(object):
 		self._include_lvl = include_level  # indicates level of include of file 
 		self._already_included = False     # indicates that this line has not undergone the include process
 		self._is_macro = False             # indicates that this line is a macro line, not to be included in the final build
+		self._is_macro_def = False         # indicates that this line is a definition of a macro
+		self._is_macro_end = False         # indicates that this line is the end of a macro
 		self._uses_near_var = False        # indicates that this line uses the special near var operator
 		self._is_end = False               # indicates that this line uses the END tag
 		self._is_op = False                # indicates that this line uses an opcode
@@ -187,7 +189,7 @@ class Line(object):
 				ind += 1 
 
 			if in_apo or in_quote:
-				raise LineException(self.get_line_num(), "Unbalanced string identifiers: " + RAW_IN, self.get_file_name())
+				raise LineException(self.get_line_num(), RAW_IN + "\n\nUnbalanced string identifiers.", self.get_file_name())
 
 			raw_line = raw_copy
 
@@ -397,7 +399,7 @@ class Line(object):
 							eval_str += str(p["varname"])
 
 						else:
-							raise LineException(self.get_line_num(), "Unidentified parameter in IF statement:\n" + self.get_raw(), self.get_file_name())
+							raise LineException(self.get_line_num(), self.get_raw() + "\n\nUnidentified parameter in IF statement.", self.get_file_name())
 
 
 					#condition = {"type": util.DATA_TYPES.CONDITION, "eval_str": eval_str}
@@ -583,7 +585,7 @@ class Line(object):
 
 						# unbalanced parens
 						if not ended:
-							raise LineException(self.get_line_num(), "unbalanced parentheses\n" + self.get_raw(), self.get_file_name())
+							raise LineException(self.get_line_num(), self.get_raw() + "\n\nUnbalanced parentheses", self.get_file_name())
 
 						#print("STACK: " + str(parse_stack))
 
@@ -719,7 +721,7 @@ class Line(object):
 					var = parse_stack.pop()["varname"]
 					parse_stack.append({"type": util.DATA_TYPES.EQU, "varname": var, "label": var})
 				except:
-					raise LineException(self.get_line_num(), "EQU prev does not have varname. \n" + self.get_raw(), self.get_file_name())
+					raise LineException(self.get_line_num(), self.get_raw() + "\n\nEQU prev does not have varname.", self.get_file_name())
 
 				self._is_equ = True
 
@@ -757,7 +759,7 @@ class Line(object):
 
 
 							else:
-								raise LineException(self.get_line_num(), "Invalid HEX literal: " + str(LINE[x]) + "\nIf using a variable, use BYTE list instead.", self.get_file_name())
+								raise LineException(self.get_line_num(), self.get_raw() + "\n\nInvalid HEX literal: " + str(LINE[x]) + "\nIf using a variable, use BYTE list instead.", self.get_file_name())
 
 							# if hex literal, convert into byte list format
 							if LINE_LEN > 2 and int(LINE[x], 16) > 255:
@@ -800,7 +802,7 @@ class Line(object):
 
 
 							else:
-								raise LineException(self.get_line_num(), "Invalid BIN literal: " + str(LINE[x]) + "\nIf using a variable, use BYTE list instead.", self.get_file_name())
+								raise LineException(self.get_line_num(), self.get_raw() + "\n\nInvalid BIN literal: " + str(LINE[x]) + "\nIf using a variable, use BYTE list instead.", self.get_file_name())
 
 							# if hex literal, convert into byte list format
 							if LINE_LEN > 8 and int(LINE[x], 2) > 255:
@@ -858,7 +860,7 @@ class Line(object):
 							parse_stack.insert(len(parse_stack) - 2, {"type": util.DATA_TYPES.TYPE, "valtype": "sr", "size": 1})
 
 					else:
-						raise LineException(self.get_line_num(), "Stack register is a reserved value.\n" + self.get_raw(), self.get_file_name())
+						raise LineException(self.get_line_num(), self.get_raw() + "\n\nStack register is a reserved value.", self.get_file_name())
 
 				if reg != util.NONE:
 					parse_stack.append({"type": util.DATA_TYPES.REGISTER, "register": reg})
@@ -995,15 +997,18 @@ class Line(object):
 				# item is an identifier for a macro
 
 				if parse_stack == []:
-					raise LineException(self.get_line_num(), "Macro is not named.\n\t" + self.get_raw(), self.get_file_name())
+					raise LineException(self.get_line_num(), self.get_raw() + "\n\nMacro is not named.", self.get_file_name())
 
 				if not (parse_stack[-1]["type"] in (util.DATA_TYPES.LABEL, util.DATA_TYPES.VARIABLE)):
 					#print(parse_stack)
-					raise LineException(self.get_line_num(), "Improper format for macro.\n\t" + self.get_raw(), self.get_file_name())
+					raise LineException(self.get_line_num(), self.get_raw() + "\n\nImproper format for macro.", self.get_file_name())
 
 				top = parse_stack[-1]
 				parse_stack = parse_stack[:-1]
 				parse_stack.append({"type": util.DATA_TYPES.MACRO, "varname": top["varname"], "label": top["label"]})
+
+				# item means line is a definition of a macro
+				self._is_macro_def = True
 
 			elif item_lower in util.MACRO_LOCAL_SYMBOLS:
 				# item is an identifier for an list of local macro variables
@@ -1013,6 +1018,7 @@ class Line(object):
 			elif item_lower in util.END_MACRO_SYMBOLS:
 				# item is an identifier for an ENDM instruction
 				parse_stack.append({"type": util.DATA_TYPES.END_MACRO})
+				self._is_macro_end = True
 
 			elif item_lower in util.SECTION_SYMBOLS:
 				# item is an identifier for a section
@@ -1138,13 +1144,13 @@ class Line(object):
 					var = parse_stack.pop()["varname"]
 					parse_stack.append({"type": util.DATA_TYPES.STORAGE_DIRECTIVE, "storage_size": 0, "varname": var, "label": var})
 				except:
-					raise LineException(self.get_line_num(), "Storage Directive prev does not have varname. \n" + self.get_raw(), self.get_file_name())
+					raise LineException(self.get_line_num(), self.get_raw() + "\n\nStorage Directive prev does not have varname.", self.get_file_name())
 
 			elif item_lower in util.OTHER_SYMBOLS:
 				# item is a known but unimplemented instruction
 				pass
 			else:
-				raise LineException(self.get_line_num(), "Unimplemented symbol: '" + str(item) + "'. \n" + self.get_raw(), self.get_file_name())
+				raise LineException(self.get_line_num(), self.get_raw() + "\n\nUnimplemented symbol: '" + str(item) + "'.", self.get_file_name())
 
 
 
@@ -1181,7 +1187,7 @@ class Line(object):
 				try: parse_stack[ind+1]["size"] = 0
 				except: failed = True
 
-				if failed: raise LineException(self.get_line_num(), "ORG symbol has no offset.\n" + self.get_raw(), self.get_file_name())
+				if failed: raise LineException(self.get_line_num(), self.get_raw() + "\n\nORG symbol has no offset.", self.get_file_name())
 
 			ind += 1
 
@@ -1301,6 +1307,18 @@ class Line(object):
 
 	def get_is_macro(self):
 		return self._is_macro
+
+	def is_macro_def(self, is_macro_def_line):
+		self._is_macro_def = is_macro_def_line
+
+	def get_is_macro_def(self):
+		return self._is_macro_def
+
+	def is_macro_end(self, is_macro_end_line):
+		self._is_macro_end = is_macro_end_line
+
+	def get_is_macro_end(self):
+		return self._is_macro_end
 
 	def get_uses_near_var(self):
 		return self._uses_near_var

@@ -13,9 +13,13 @@ set hex-output=out
 set code-output="../../Output/CODE_ONLY.rom"
 set ROM-OUTPUT="../../Output/Super Mario Kart (U).sfc"
 
-set asm=as65c
-set lnk=link
-set h2b=hex2bin
+rem set exe_dir="single_exe/"
+set exe_dir="dist/"
+
+set asm=%exe_dir%as65c
+set lnk=%exe_dir%link
+set h2b=%exe_dir%hex2bin
+set addromdata=%exe_dir%addROMdata
 
 
 set kimura=%source_dir%"/kimura"
@@ -312,7 +316,7 @@ exit /b
 		call :add_asset_list "%DEBUG_ASSET_INSTRUCTIONS:"=%"
 	)
 
-	addROMdata.exe %code-output% "temp.txt" %ROM-OUTPUT%
+	%addromdata% %code-output% "temp.txt" %ROM-OUTPUT%
 
 	del "temp.txt"
 

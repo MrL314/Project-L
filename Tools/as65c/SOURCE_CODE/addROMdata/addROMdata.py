@@ -30,10 +30,6 @@ def write_data(file, s_off, d_off, d_size, data):
 
 	print("Writing 0x" + format(d_size, "04x") + " bytes from offset $" + format(s_off, "06x") + " in file " + str(file) + " to offset $" + format(d_off, "06x"))
 
-	
-
-		#print(format(len(data), "04x"))
-
 
 	for i in range(d_size):
 		if d_off + i + 2 > len(DATA):

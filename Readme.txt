@@ -1,7 +1,7 @@
 ######################################
 #  PROJECT L  by MrL314 and Dirtbag  #
 ######################################
-version 1.0: Dec. 1, 2021
+version 1.0.1: Dec. 8, 2021
 
 
 QUICK DOWNLOAD: >>> https://github.com/MrL314/Project-L/archive/master.zip
@@ -10,6 +10,7 @@ QUICK DOWNLOAD: >>> https://github.com/MrL314/Project-L/archive/master.zip
 Contact MrL314: 
 	email: LFmisterL314@gmail.com
 	discord: MrL314#8106
+	twitter: @LF_MrL314 [ https://twitter.com/LF_MrL314 ]
 
 Contact Dirtbag:
 	discord: Dirtbag#3153
@@ -75,10 +76,10 @@ but some files are required that you will need to supply yourself before you run
 
 2) The following folders under \setup\ need to be populated
 
-	\setup\risc\ with the contents of \NEWS_05\NEWS_05\home\kimura\kart\risc.lzh
-	\setup\CAR\ with the contents of \NEWS_04\home\sugiyama\CAR
-	\setup\data\ with the contents of \NEWS_05\NEWS_05\home\kimura\kart\data.lzh
-	\setup\mak\ with the contents of \NEWS_05\NEWS_05\home\kimura\kart\mak.lzh
+	\setup\risc\ with the contents of other\NEWS\テープリストア\NEWS_05\NEWS_05\home\kimura\kart\risc.lzh
+	\setup\CAR\ with the contents of other\NEWS\テープリストア\NEWS_04\home\sugiyama\CAR
+	\setup\data\ with the contents of other\NEWS\テープリストア\NEWS_05\NEWS_05\home\kimura\kart\data.lzh
+	\setup\mak\ with the contents of other.7z\NEWS\テープリストア\NEWS_05\NEWS_05\home\kimura\kart\mak.lzh
 	
 	MrL's Note:
 		If you are using 7zip to unzip the folder, it is fine to use the 
