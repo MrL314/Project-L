@@ -369,7 +369,7 @@ class Line(object):
 				ind += 1
 
 			elif L0_LOWER in util.CONDITIONAL_SYMBOLS:
-				# is a conditional statement that affets assembler process
+				# is a conditional statement that affects assembler process
 
 				if L0_LOWER == "if":
 					

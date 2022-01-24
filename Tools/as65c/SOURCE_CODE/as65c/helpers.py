@@ -13,6 +13,8 @@ import hashlib
 import time
 import platform
 
+import filelock
+
 
 PLTFRM = platform.system()
 
@@ -160,24 +162,50 @@ def set_symbols(symbols, file):
 PARSED_HASHES = {}
 HASH_SIZE = 32
 
+
+fhist_lockfile = "fhist.ahist"
+fhist_lock = None
+
+
+if PLTFRM == "Windows":
+	fhist_lock = filelock.WindowsFileLock(fhist_lockfile + ".lock")
+elif PLTFRM == "Linux":
+	fhist_lock = filelock.UnixFileLock(fhist_lockfile + ".lock")
+elif PLTFRM == "Darwin":
+	fhist_lock = filelock.UnixFileLock(fhist_lockfile + ".lock")
+else:
+	fhist_lock = filelock.UnixFileLock(fhist_lockfile + ".lock")
+
+
 def load_hashes():
 	global PARSED_HASHES
 
-	if not path.exists("fhist.ahist"):
-		open("fhist.ahist", "a").close() # will create an empty file if it doesnt exist
+	H_BYTES = []
+
+	with fhist_lock:
+
+		if not path.exists("fhist.ahist"):
+			open("fhist.ahist", "a").close() # will create an empty file if it doesnt exist
+
+		with open("fhist.ahist", "rb") as HASH_HISTORY:
+			H_BYTES = HASH_HISTORY.read()
+
+
+	get_latest_hashes(H_BYTES)
 
 
 
 
-	with open("fhist.ahist", "rb") as HASH_HISTORY:
-		H_BYTES = HASH_HISTORY.read()
+def get_latest_hashes(H_BYTES):
+	global PARSED_HASHES
 
-		for i in range(len(H_BYTES) // (HASH_SIZE*2)):
-			CURR_HASH = H_BYTES[i*(HASH_SIZE*2):(i+1)*(HASH_SIZE*2)]
-			file_hash = "".join([format(h, "02x") for h in CURR_HASH[:HASH_SIZE]])
-			data_hash = "".join([format(h, "02x") for h in CURR_HASH[HASH_SIZE:]])
 
-			PARSED_HASHES[file_hash] = data_hash
+	for i in range(len(H_BYTES) // (HASH_SIZE*2)):
+		CURR_HASH = H_BYTES[i*(HASH_SIZE*2):(i+1)*(HASH_SIZE*2)]
+		file_hash = "".join([format(h, "02x") for h in CURR_HASH[:HASH_SIZE]])
+		data_hash = "".join([format(h, "02x") for h in CURR_HASH[HASH_SIZE:]])
+
+		PARSED_HASHES[file_hash] = data_hash
 
 
 
@@ -187,11 +215,22 @@ def load_hashes():
 def add_hash(file_hash, data_hash):
 	global PARSED_HASHES
 
-	PARSED_HASHES[file_hash.hexdigest()] = data_hash.hexdigest()
+	f_dig = file_hash.hexdigest()
+	d_dig = data_hash.hexdigest()
 
-	with open("fhist.ahist", "wb") as HASH_HISTORY:
+
+	with fhist_lock:
+		with open("fhist.ahist", "rb") as HASH_HISTORY:
+			H_BYTES = HASH_HISTORY.read()
+
+
+		get_latest_hashes(H_BYTES)
+
+		PARSED_HASHES[f_dig] = d_dig
+
+		HASH_DAT = []
+
 		for f in PARSED_HASHES:
-			HASH_DAT = []
 
 			F = f
 			D = PARSED_HASHES[f]
@@ -204,7 +243,10 @@ def add_hash(file_hash, data_hash):
 			for i in range(HASH_SIZE):
 				HASH_DAT.append(int("0x" + D[i*2:(i+1)*2], 16))
 
-			HASH_HISTORY.write(bytes(HASH_DAT))
+
+		with open("fhist.ahist", "wb") as HASH_HISTORY:
+
+				HASH_HISTORY.write(bytes(HASH_DAT))
 
 
 

@@ -1,4 +1,4 @@
-# OBFUSCATED FOR PRIVACY REASONS
+
 
 import os
 import errno
@@ -691,6 +691,8 @@ else:
 	LBL03 = "60637f7d722660157e35667d7d267636"
 	LBL04 = "60637f7d722660157b32662e7d267636"
 	LBL05 = "60637f7d722660157e68662e7d267636"
+	LBL06 = "60637f29727a60427e35667c78237636"
+	LBL07 = "60637f29727a60427e35667c7d707636"
 	ED301 = "63367b7e762664187b62667b7f7474371079676b"
 	ED302 = "63337c72737465197f63667a7a237662157962627e7d747060107865677a797c7363132a"
 
@@ -1440,12 +1442,16 @@ add_line(unh(KKJ2A, key1, key2), unh(KME06, key1, key2), 354)
 
 
 
+edit_in_file(unh(KKJ3A, key1, key2), 58, 10, unh(LBL06, key1, key2), unh(LBL07, key1, key2))
+
 edit_in_file(unh(KKJ3A, key1, key2), 400, 14, unh(LBL00, key1, key2), unh(LBL02, key1, key2))
 edit_in_file(unh(KKJ3A, key1, key2), 402, 14, unh(LBL00, key1, key2), unh(LBL03, key1, key2))
 
 edit_in_file(unh(KKJ3A, key1, key2), 426, 14, unh(LBL01, key1, key2), unh(LBL04, key1, key2))
 edit_in_file(unh(KKJ3A, key1, key2), 428, 14, unh(LBL01, key1, key2), unh(LBL05, key1, key2))
 
+
+edit_in_file(unh(KKM10, key1, key2), 58, 10, unh(LBL06, key1, key2), unh(LBL07, key1, key2))
 
 edit_in_file(unh(KKM10, key1, key2), 400, 14, unh(LBL00, key1, key2), unh(LBL02, key1, key2))
 edit_in_file(unh(KKM10, key1, key2), 402, 14, unh(LBL00, key1, key2), unh(LBL03, key1, key2))
@@ -1460,6 +1466,8 @@ edit_in_file(unh(KKM11, key1, key2), 320, 14, unh(LBL00, key1, key2), unh(LBL03,
 edit_in_file(unh(KKM11, key1, key2), 343, 14, unh(LBL01, key1, key2), unh(LBL04, key1, key2))
 edit_in_file(unh(KKM11, key1, key2), 345, 14, unh(LBL01, key1, key2), unh(LBL05, key1, key2))
 
+
+edit_in_file(unh(KJ01, key1, key2), 58, 10, unh(LBL06, key1, key2), unh(LBL07, key1, key2))
 
 edit_in_file(unh(KJ01, key1, key2), 400, 14, unh(LBL00, key1, key2), unh(LBL02, key1, key2))
 edit_in_file(unh(KJ01, key1, key2), 402, 14, unh(LBL00, key1, key2), unh(LBL03, key1, key2))

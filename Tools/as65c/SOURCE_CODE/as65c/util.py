@@ -31,6 +31,11 @@ global BANK_CHAR
 global OFFSET_CHAR
 global HIGH_CHAR
 global LOW_CHAR
+global M_VAR_CHAR_A
+global M_VAR_CHAR_B
+global M_LOC_CHAR
+global M_SUB_CHAR_A
+global M_SUB_CHAR_B
 global ARITHMETIC_SYMBOLS
 global OPCODE_SYMBOLS
 global REGA_SYMBOLS
@@ -99,17 +104,42 @@ def get_time(): return HELPER.get_time()
 
 
 
-
+##########################################################
+# make these symbols that the user could not enter unless intentionally 
+#   trying to break things... (please don't)
+# TO-DO: Pre-check to make sure that these symbols are never used in the raw text
 
 # bit shift operation symbols
-BSL_CHAR = "«"   # ALT + 174
-BSR_CHAR = "»"   # ALT + 175
+BSL_CHAR = "«"         # ALT + 174
+BSR_CHAR = "»"         # ALT + 175
 
 # bank/offset symbols
-BANK_CHAR = "@"
-OFFSET_CHAR = "`"
-HIGH_CHAR = "{"
-LOW_CHAR = "}"
+BANK_CHAR = "¶"        # ALT + 20
+OFFSET_CHAR = "§"      # ALT + 21
+HIGH_CHAR = "⌠"        # ALT + 244
+LOW_CHAR = "⌡"         # ALT + 245
+
+# macro variable symbol (only temporarily used!)
+#M_VAR_CHAR_A = "%°"    # % +   ALT + 248
+M_VAR_CHAR_A = "{%"    # { + %
+M_VAR_CHAR_B = "}"     # }
+M_LOC_CHAR = "˜"     # ALT + 0152
+
+# near variable designator symbol
+
+
+
+
+##########################################################
+
+
+# macro substitution bracket symbol (only temporarily used!)
+M_SUB_CHAR_A = "{"
+M_SUB_CHAR_B = "}"
+
+
+
+
 
 # symbols used in simple arithmetic in code
 #ARITHMETIC_SYMBOLS = ("+", "-", "*", "/", "%", BSL_CHAR, BSR_CHAR, "|", "&", "^", "(", ")")

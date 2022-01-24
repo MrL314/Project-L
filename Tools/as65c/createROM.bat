@@ -258,15 +258,19 @@ exit /b
 	set LINK_FILES=
 	set t=%ASM_FILES%
 	:asmfileloop
-	set curr_f=""
-	for /f "tokens=1* delims= " %%a in ("%t%") do set curr_f=%%a&set t=%%b
-	set curr_f=%curr_f:"=%
-	call :clean_end %curr_f%
-	for %%f in (%curr_f%) do (
-		call :assemble %cleaned%%%~nf.asm
-		set LINK_FILES=%LINK_FILES%%cleaned%%%~nf.rel &rem
-	)
-	if defined t goto :asmfileloop
+		set curr_f=""
+		for /f "tokens=1* delims= " %%a in ("%t%") do set curr_f=%%a&set t=%%b
+		set curr_f=%curr_f:"=%
+		call :clean_end %curr_f%
+		for %%f in (%curr_f%) do (
+			call :assemble %cleaned%%%~nf.asm
+			set LINK_FILES=%LINK_FILES%%cleaned%%%~nf.rel &rem
+		)
+		if defined t goto :asmfileloop
+
+
+	rem wait for multi-core assembly to finish
+	call :asm_wait_loop
 
 	ECHO Assembled .asm files!
 
@@ -367,7 +371,7 @@ exit /b
 exit /b
 
 :assemble
-	%asm% %1 %asm-vars%
+	start "asmble" /b %asm% %1 %asm-vars%
 exit /b
 
 
@@ -386,7 +390,20 @@ exit /b
 exit /b
 
 
+:checkinstances
+	rem check how many instances of as65c.exe are running
+	rem this is used to speed up assembly time by a TON!
+	for /f "usebackq tokens=1,*" %%t in (`tasklist ^| find /I /C "as65c.exe"`) do set INSTANCES=%%t
+exit /b
 
+:asm_wait_loop
+	call :checkinstances
+	
+	if %INSTANCES% EQU 0 goto :exit_asm_wait
+
+	goto :asm_wait_loop
+	:exit_asm_wait
+exit /b
 
 
 

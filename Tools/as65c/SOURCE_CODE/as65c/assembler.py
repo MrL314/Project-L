@@ -319,7 +319,7 @@ def get_file_include_text(filename):
 
 
 
-def HASH_CHECK(filename):
+def HASH_CHECK(filename, asmvars={}):
 
 	util.load_hashes()
 
@@ -329,6 +329,10 @@ def HASH_CHECK(filename):
 
 	for l in FILE_LINES:
 		curr_hash.update(l)
+
+	for var in asmvars:
+		var_l = str(var) + "=" + str(asmvars[var])
+		curr_hash.update(var_l.encode("utf-8"))
 
 	updated = False
 	if curr_hash.hexdigest() != get_hash(filename): updated = True
@@ -384,31 +388,6 @@ class ASM_FILE(object):
 		NUM_LINES = len(ASM_LINES)
 
 		in_macro = False
-		'''
-		LINE_OBJECTS = [None for _ in range(NUM_LINES)]
-
-
-
-		
-		def make_line_objs(queue_out: Queue, line_num, batch_size):
-
-
-			batch_lines = []
-
-			max_ind = min(batch_size, NUM_LINES-line_num)
-
-			for batch_ind in range(max_ind):
-				batch_lines.append(LineObject.Line(line, file=filename, line_number=line_number, include_level=include_level))
-		'''
-
-
-
-
-
-
-
-
-
 
 
 
@@ -505,18 +484,12 @@ class ASM_FILE(object):
 										# if not already undergone the include process
 										L_OBJ.set_already_included() # so include doesnt happen again
 
-										file = chunk["filename"]  # include file
+										file = chunk["filename"]     # include file
 										path = L_OBJ.get_file_path() # file path relative to source file
 
 										real_path = os.path.abspath(path + file)
 
 										if not (real_path in self._INCLUDED_FILES):
-											#extension = file.split(".")[-1] # file extension
-
-											#INCLUDED_FILES.add(real_path)
-
-											#NEW_LINES, INCLUDED_FILES = MAKE_ASM_LINES(path + file, include_level=include_level+1, INCLUDED_FILES=INCLUDED_FILES, ext_vars=ext_vars)
-											#for l in NEW_LINES: LINES.append(l)
 
 											self.MAKE_ASM_LINES(path + file, include_level=include_level+1)
 
@@ -595,7 +568,7 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 
 		
 
-		file_updated, curr_hash = HASH_CHECK(filename)
+		file_updated, curr_hash = HASH_CHECK(filename, ext_vars)   # check hash data against last successful assembly 
 
 		if (not force_assemble) and file_updated: force_assemble = True
 
@@ -702,6 +675,11 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 		curr_macro_locals = []
 		NUM_LINES = len(LINES)
 		curr_macro_start_line = 0
+
+
+		#macro_lvl = 0   # current depth of nested macros
+
+
 		while line_ind < NUM_LINES:
 			LINE_OBJ = LINES[line_ind]
 
@@ -735,17 +713,23 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 						vind = curr_macro_vars.index(var)
 
 						# some macros use & to indicate local variable. maybe find a better way?
-						raw_line = raw_line.replace("&" + var, curr_macro_name + "_MACRO_VARIABLE_"+str(vind))
+						raw_line = raw_line.replace("&" + var, str(util.M_VAR_CHAR_A) + str(vind) + str(util.M_VAR_CHAR_B))
 
-						raw_line = raw_line.replace(var, curr_macro_name + "_MACRO_VARIABLE_"+str(vind))
+						# some macros will allow the use of a direct substitution
+						raw_line = raw_line.replace(str(util.M_SUB_CHAR_A) + var + str(util.M_SUB_CHAR_B), str(util.M_VAR_CHAR_A) + str(vind) + str(util.M_VAR_CHAR_B))
+
+
+						raw_line = raw_line.replace(var, str(util.M_VAR_CHAR_A) + str(vind) + str(util.M_VAR_CHAR_B))
+
+
 
 					#for var in macro_locals_by_length:
 					#	vind = curr_macro_locals.index(var)
 					#
 					#	# some macros use & to indicate local variable. maybe find a better way?
-					#	raw_line = raw_line.replace("&" + var, curr_macro_name + "_MACRO_VARIABLE_"+str(vind))
+					#	raw_line = raw_line.replace("&" + var, curr_macro_name + str(util.MACROVAR_SYMBOL) + str(vind))
 					#
-					#	raw_line = raw_line.replace(var, curr_macro_name + "_MACRO_VARIABLE_"+str(vind))
+					#	raw_line = raw_line.replace(var, curr_macro_name + str(util.MACROVAR_SYMBOL) + str(vind))
 
 
 
@@ -855,6 +839,15 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 			#	line_ind += 1
 			#	continue
 
+			#if LINE_OBJ.get_is_macro_def() == True:
+			#	print(LINE_OBJ.get_line_num(), LINE_OBJ.get_raw())
+
+			#if LINE_OBJ.get_is_macro_end() == True:
+			#	print(LINE_OBJ.get_line_num(), LINE_OBJ.get_raw())
+
+			#if LINE_OBJ.get_is_macro() == True:
+			#	print(LINE_OBJ.get_line_num(), LINE_OBJ.get_raw())
+
 			LINE_LEN = len(LINE)
 			while cind < LINE_LEN:
 
@@ -867,20 +860,22 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 						RAW = LINE_OBJ.get_raw()
 						CLEAN = LINE_OBJ.get_clean_line()
 
+						#print(lnum, CLEAN)
+
 						m_name = LINE[cind]["varname"]
 
 						MACRO = macros[LINE[cind]["varname"]]
 
 						variable_vals = []
 
-						split = (" " + CLEAN + " ").split(" " + LINE[cind]["varname"] + " ")
+						split = (" " + CLEAN + " ").split(" " + m_name + " ")
 
-						args = (" " + LINE[cind]["varname"] + " ").join(split[1:])
+						args = (" " + m_name + " ").join(split[1:])
 
 
 						for var in args.split(" , "):
 							if var != '':
-								variable_vals.append(var)
+								variable_vals.append(var.lstrip().rstrip())
 
 
 						if len(variable_vals) != len(MACRO["macro_vars"]):
@@ -891,6 +886,16 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 
 
 
+						#LINES[line_ind] = LineObject.Line(";", line_number=LINE_OBJ.get_line_num(), file=LINE_OBJ.get_file_path() + LINE_OBJ.get_file_name(), include_level=LINE_OBJ.get_include_level()+1)
+						
+						# last working version:
+						TEMP_LINES[-1] = LineObject.Line(";", line_number=LINE_OBJ.get_line_num(), file=LINE_OBJ.get_file_path() + LINE_OBJ.get_file_name(), include_level=LINE_OBJ.get_include_level())
+						#TEMP_LINES[-1].set_parsed(LINE[:cind])
+
+
+
+
+						'''
 						CLEAN = split[0].lstrip().rstrip()
 						CLEAN = " ".join((CLEAN + " " + MACRO["macro_lines"][0]).split())
 
@@ -898,13 +903,11 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 						FUNC_LINE = CLEAN
 						vind = 0
 						for var in variable_vals:
-							FUNC_LINE = FUNC_LINE.replace(MACRO["name"] + "_MACRO_VARIABLE_" + str(vind), var)
+							FUNC_LINE = FUNC_LINE.replace(MACRO["name"] + str(util.MACROVAR_SYMBOL) + str(vind), var)
 							vind += 1
 
-						#print(FUNC_LINE)
-
-						#LINES[line_ind] = LineObject.Line(";", line_number=LINE_OBJ.get_line_num(), file=LINE_OBJ.get_file_path() + LINE_OBJ.get_file_name(), include_level=LINE_OBJ.get_include_level()+1)
-						TEMP_LINES[-1] = LineObject.Line(";", line_number=LINE_OBJ.get_line_num(), file=LINE_OBJ.get_file_path() + LINE_OBJ.get_file_name(), include_level=LINE_OBJ.get_include_level())
+						print(FUNC_LINE)
+						'''
 						
 
 
@@ -913,13 +916,17 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 						for macro_line in MACRO["macro_lines"][:-1]:
 							FUNC_LINE = macro_line
 							FUNC_BEFORE = FUNC_LINE
+
+							#print(FUNC_LINE)
+
 							vind = 0
 							for var in variable_vals:
-								FUNC_LINE = FUNC_LINE.replace(MACRO["name"] + "_MACRO_VARIABLE_" + str(vind), var)
+								FUNC_LINE = FUNC_LINE.replace(str(util.M_VAR_CHAR_A) + str(vind) + str(util.M_VAR_CHAR_B), var)
 								vind += 1
 
 							for var in MACRO["local_vars"]:
-								FUNC_LINE = FUNC_LINE.replace(var, MACRO["name"] + "_call_" + str(MACRO["times_called"]) + "_LOCAL_" + var)
+								#FUNC_LINE = FUNC_LINE.replace(var, MACRO["name"] + "_call_" + str(MACRO["times_called"]) + "_LOCAL_" + var)    #  
+								FUNC_LINE = FUNC_LINE.replace(var, var + "@" + MACRO["name"] + "˜" + str(MACRO["times_called"]))    #  ˜ = ALT + 0152
 
 							#print(FUNC_LINE)
 
@@ -927,16 +934,30 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 							#	print("Line changed! \n\t" + FUNC_BEFORE + "\nto\n\t" + FUNC_LINE + "\n")
 
 							mac_line = 'MACRO ' + MACRO["name"]
-							mac_line = mac_line + " "*(8-len(mac_line)) + "\t{ "
+							mac_line = mac_line + " "*(8-len(mac_line)) + "\t… "		# … = ALT + 0133
+
+
+							# preserve label at beginning of line for macro call if needed
+							if lind == 0:
+								pre_mac = split[0].lstrip().rstrip()
+								if pre_mac != "": 
+									if FUNC_LINE.lstrip() == FUNC_LINE: pre_mac += "\t"
+									FUNC_LINE = pre_mac + FUNC_LINE
+
 
 							M_LINE = LineObject.Line(FUNC_LINE, line_number=LINE_OBJ.get_line_num(), file=LINE_OBJ.get_file_path() + LINE_OBJ.get_file_name(), include_level=LINE_OBJ.get_include_level()+1, macro_line=mac_line + FUNC_LINE)
 
 							#print("FUNC_LINE: ", FUNC_LINE, "\nM_LINE:    ", M_LINE.get_raw(), "\n")
 
+
 							#LINES.insert(line_ind + lind + 1, M_LINE)
 							TEMP_LINES.append(M_LINE)
 
+							#print(M_LINE.get_raw())
+
 							lind += 1
+
+						
 
 						#LINES.insert(line_ind + lind + 1, LineObject.Line(MACRO["macro_lines"][-1], line_number=LINE_OBJ.get_line_num(), file=LINE_OBJ.get_file_path() + LINE_OBJ.get_file_name(), include_level=LINE_OBJ.get_include_level()+1, macro_line='MACRO ' + MACRO["name"] + ':\t\t' + MACRO["raw_lines"][-1]))
 	
@@ -4224,9 +4245,9 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 							print("[WARN] -- Should be " + format(TEST_OFFS, "04x") + ", is " + format(REAL_OFFS, "04x"))
 							REAL_OFFS = TEST_OFFS
 
+						bts = LINE.get_bytes()
 
-
-						BYTES = LINE.get_bytes()[3:]
+						BYTES = bts[3:]
 						BL = len(BYTES)
 						idx = 0
 						if BYTES != []:
@@ -4248,11 +4269,29 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 
 
 
+						text = ""
+
+						curr_l = format(LINE.get_offset(), "04x") + "    "
+						
+						i = 0
+						printed_code = False
+						for x in bts:
+							if i % 16 == 0 and i != 0:
+								printed_code = True
+								text += (curr_l + "…").ljust(64) + str(LINE.get_raw()).rstrip() + "\n" 
+								curr_l = "      … "
+
+							curr_l += format(x, "02x") + " "
 
 
+							i += 1
 
+						if not printed_code:
+							curr_l = curr_l.ljust(64) + str(LINE.get_raw()).rstrip()
 
-						text = format(LINE.get_offset(), "04x") + "    " + " ".join([format(x, "02x") for x in LINE.get_bytes()]).ljust(80) + str(LINE.get_raw()).ljust(50)
+						text += curr_l 
+						
+
 						#print(LINE.get_bytes(), str(LINE.get_raw()))
 
 						
@@ -4266,8 +4305,10 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 			if TIMING_DEBUG: print("  lis write time: ", format(util.get_time()-lstart, " 10.5f"))
 
 
-		LIS_THREAD = threading.Thread(target=WRITE_LIS, args=())
-		LIS_THREAD.start()
+		#LIS_THREAD = threading.Thread(target=WRITE_LIS, args=())
+		#LIS_THREAD.start()
+
+		WRITE_LIS()
 
 
 		###############################################################################################
@@ -4908,7 +4949,7 @@ def assembleFile(filename, ext_vars={}, force_assemble=False, check_hash=False, 
 		
 		if TIMING_DEBUG: print("  rel write time: ", format(util.get_time()-start, " 10.5f"))
 
-		LIS_THREAD.join()
+		#LIS_THREAD.join()
 
 		succeeded = True
 
