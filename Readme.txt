@@ -1,7 +1,7 @@
 ######################################
 #  PROJECT L  by MrL314 and Dirtbag  #
 ######################################
-version 1.0.1: Dec. 8, 2021
+version 1.0.2: Jan. 23, 2022
 
 
 QUICK DOWNLOAD: >>> https://github.com/MrL314/Project-L/archive/master.zip
