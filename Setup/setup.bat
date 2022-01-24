@@ -1,9 +1,13 @@
 REM Check for source files needed for setup.
 @echo off
-title Setup Script 1.0
+title Setup Script 1.1
 cls
 
-IF EXIST ".\risc\bin\demo_kame.bin" (echo Found \risc files) ELSE (echo \risc files not found. & ECHO.  & ECHO.Copy the contents of archive: & ECHO.    \NEWS_05\NEWS_05\home\kimura\kart\risc.lzh & ECHO to: & ECHO.     %~dp0setup\risc\ & echo. & echo Then re-run setup.bat read the readme for more details.)
+set "cdir=%~dp0"
+set "cdir=%cdir:)=^)%"
+
+
+IF EXIST ".\risc\bin\demo_kame.bin" (echo Found \risc files) ELSE (echo \risc files not found. & ECHO.  & ECHO.Copy the contents of archive: & ECHO.    \NEWS_05\NEWS_05\home\kimura\kart\risc.lzh & ECHO to: & ECHO.     %cdir%risc\ & echo. & echo Then re-run setup.bat read the readme for more details.)
 IF EXIST ".\risc\bin\demo_kame.bin" (cls) ELSE (pause)
 IF EXIST ".\risc\bin\demo_kame.bin" (cls) ELSE (EXIT)
 
@@ -13,20 +17,20 @@ REM Make sure that the correct demo.asm is in use (if extracted with 7zip)
 IF EXIST ".\risc\join\demo_1.asm" (ren ".\risc\join\demo.asm" "demo.asm.bak") ELSE (echo.)
 IF EXIST ".\risc\join\demo_1.asm" (ren ".\risc\join\demo_1.asm" "demo.asm") ELSE (echo.)
 
-IF EXIST ".\car\TITLE-ENG.CGX" (echo Found \CAR files) ELSE (echo \CAR files not found. & ECHO. & ECHO. & ECHO Copy the the contents of directory: & ECHO.    \NEWS_04\home\sugiyama\CAR & ECHO to: & ECHO.     %~dp0setup\CAR & echo. & echo Then re-run setup.bat read the readme for more details.)
+IF EXIST ".\car\TITLE-ENG.CGX" (echo Found \CAR files) ELSE (echo \CAR files not found. & ECHO. & ECHO. & ECHO Copy the the contents of directory: & ECHO.    \NEWS_04\home\sugiyama\CAR & ECHO to: & ECHO.     %cdir%CAR\ & echo. & echo Then re-run setup.bat read the readme for more details.)
 IF EXIST ".\car\TITLE-ENG.CGX" (cls) ELSE (pause)
 IF EXIST ".\car\TITLE-ENG.CGX" (cls) ELSE (EXIT)
  
 
-IF EXIST ".\data\rom\rom1-p.DAT" (echo Found \data files) ELSE (echo \data files not found. & ECHO. & ECHO Copy the contents of archive: & ECHO.    \NEWS_05\NEWS_05\home\kimura\kart\data.lzh & ECHO to: & ECHO.     %~dp0setup\data & echo. & echo Then re-run setup.bat read the readme for more details.)
+IF EXIST ".\data\rom\rom1-p.DAT" (echo Found \data files) ELSE (echo \data files not found. & ECHO. & ECHO Copy the contents of archive: & ECHO.    \NEWS_05\NEWS_05\home\kimura\kart\data.lzh & ECHO to: & ECHO.     %cdir%data\ & echo. & echo Then re-run setup.bat read the readme for more details.)
 IF EXIST ".\data\rom\rom1-p.DAT" (cls) ELSE (pause)
 IF EXIST ".\data\rom\rom1-p.DAT" (cls) ELSE (EXIT)
 
-IF EXIST ".\mak\apu.asm" (echo Found \mak files) ELSE (echo \mak files not found. & ECHO. & ECHO. & ECHO Copy the contents of archive: & ECHO.   \NEWS_05\NEWS_05\home\kimura\kart\mak.lzh & ECHO to: & ECHO.     %~dp0setup\mak & echo. & echo Then re-run setup.bat read the readme for more details.)
+IF EXIST ".\mak\apu.asm" (echo Found \mak files) ELSE (echo \mak files not found. & ECHO. & ECHO. & ECHO Copy the contents of archive: & ECHO.   \NEWS_05\NEWS_05\home\kimura\kart\mak.lzh & ECHO to: & ECHO.     %cdir%mak\ & echo. & echo Then re-run setup.bat read the readme for more details.)
 IF EXIST ".\mak\apu.asm" (cls) ELSE (pause)
 IF EXIST ".\mak\apu.asm" (cls) ELSE (EXIT)
 
-IF EXIST ".\Super Mario Kart (USA).sfc" (echo Found ROM Found) ELSE (ECHO Copy "Super Mario Kart (USA).sfc" to %~dp0\ and re-run setup.bat note this must be a unheadered ROM image and named correctly)
+IF EXIST ".\Super Mario Kart (USA).sfc" (echo Found ROM Found) ELSE (ECHO Copy "Super Mario Kart (USA).sfc" to %cdir% and re-run setup.bat note this must be a unheadered ROM image and named correctly)
 IF EXIST ".\Super Mario Kart (USA).sfc" (cls) ELSE (pause)
 IF EXIST ".\Super Mario Kart (USA).sfc" (cls) ELSE (EXIT)
 
