@@ -393,7 +393,7 @@ exit /b
 :checkinstances
 	rem check how many instances of as65c.exe are running
 	rem this is used to speed up assembly time by a TON!
-	for /f "usebackq tokens=1,*" %%t in (`tasklist ^| find /I /C "as65c.exe"`) do set INSTANCES=%%t
+	for /f "usebackq tokens=1,* delims=" %%t in (`tasklist /fi "IMAGENAME eq as65c.exe" /fo csv^|find /I /C "as65c.exe"`) do set INSTANCES=%%t
 exit /b
 
 :asm_wait_loop
