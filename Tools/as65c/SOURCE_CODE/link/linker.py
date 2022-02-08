@@ -350,12 +350,7 @@ def DO_LINK(L_ARGS):
 
 		print("[INFO] Writing Hex blocks.")
 
-		HEX_DATA = [fresh_data(b) for b in range(0x1000000)]
-
-
 		CODE_BLOCKS = []
-
-
 
 		with open(map_file, "w") as F:
 
@@ -673,8 +668,6 @@ def DO_LINK(L_ARGS):
 		I_HEX_DATA.append([0, 0, 0, 1, 0xFF])
 
 
-
-
 		with open(outputfile, "wb") as outf:
 			for HUNK in I_HEX_DATA:
 				if len(HUNK) > 0:
@@ -702,6 +695,8 @@ def DO_LINK(L_ARGS):
 			pass
 		"""
 
+		print("[INFO] Writing label map file.")
+
 		SORTED_LABELS = sorted(CODE_LABELS.items(), key=lambda kv: kv[1] & 0x7FFFFF)
 
 
@@ -709,8 +704,6 @@ def DO_LINK(L_ARGS):
 			s = format(a, "06x").upper()
 			return "$" + s[:-4] + ":" + s[-4:]
 
-
-		print("[INFO] Writing label map file.")
 		with open("labels.map", 'w') as f:
 
 			p_f_name = "\x00"
